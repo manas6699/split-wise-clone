@@ -1,34 +1,47 @@
 const asyncHandler = require("../utils/asynchandler");
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user.model')
+const User = require('../models/user.model');
 require('dotenv').config();
 
-const loginUser = asyncHandler(async(req , res) => {
-    const { phone, password } = req.body;
-    
+const loginUser = asyncHandler(async (req, res) => {
+  const { phone, password } = req.body;
+
+  // Validate input
+  if (!phone || !password) {
+    return res.status(400).json({ message: 'Phone and password are required' });
+  }
+
   try {
+    // Check if the user exists
     const user = await User.findOne({ phone });
-    console.log("phone number found!")
-    if (!user) return res.status(400).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(403).json({ message: 'Invalid credentials' });
+    }
 
-   
+    // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isMatch) {
+      return res.status(403).json({ message: 'Invalid credentials' });
+    }
 
-   
 
-    const token = jwt.sign({ id: user._id, name: user.name , phone: user.phone}, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generate a JWT token
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not defined in environment variables');
+    }
+    const token = jwt.sign(
+      { id: user._id, name: user.name, phone: user.phone },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-    
-    // Set token in headers
-    res.set('Authorization', `Bearer ${token}`);
-
+    // Return token in response
     res.status(200).json({ token, message: 'Logged in successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    console.error('Login error:', error.message);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
   }
-})
+});
 
-module.exports = loginUser
+module.exports = loginUser;
