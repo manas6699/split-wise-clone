@@ -19,7 +19,12 @@ const userSchema = new mongoose.Schema(
             required: [true, 'Password is required']
         },
         
-
+        groups: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Group', // Reference to the Group model
+            },
+        ],
     },
     {
         timestamps: true
