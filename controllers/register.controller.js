@@ -14,10 +14,10 @@ const registerUser = asyncHandler(async(req , res) => {
     console.log("user is not existing")
     // Hash password
     console.log("Before hashing" , password);
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("Password is hashed");
+    // const hashedPassword = await bcrypt.hash(password, 10);
+    // console.log("Password is hashed");
     // Save user
-    const user = new User({ name,  password: hashedPassword, phone });
+    const user = new User({ name,  password, phone });
     await user.save();
 
     res.status(201).json({ message: 'User registered.' });
