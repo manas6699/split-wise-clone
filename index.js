@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth')
 
 const connectDB = require('./db/dbconnection')
+
+const protectedRoute = require('./routes/protectedRoute')
 require('dotenv').config();
 
 
@@ -15,6 +17,7 @@ connectDB()
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api',protectedRoute);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
