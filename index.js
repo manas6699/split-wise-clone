@@ -7,6 +7,12 @@ const connectDB = require('./db/dbconnection')
 const protectedRoute = require('./routes/protectedRoute')
 
 const addExpenseHandler = require('./routes/expenses.routes')
+
+const allUserList = require('./routes/userlist.routes')
+
+
+const createGroup = require('./routes/group.routes')
+
 require('dotenv').config();
 
 
@@ -21,6 +27,8 @@ connectDB()
 app.use('/api/auth', authRoutes);
 app.use('/api',protectedRoute);
 app.use('/api/add' ,addExpenseHandler );
+app.use('/api',allUserList);
+app.use('/api',createGroup);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
