@@ -5,26 +5,37 @@ const User = require('../models/user.model');
 const authMiddleware = require('../middlewares/auth.middleware');
 
 // Create a new group
+// the user who created the group is automatically added in members position
 router.post('/create/group', authMiddleware, async (req, res) => {
   try {
     const { groupName, members } = req.body;
 
+    // Extract the user ID of the authenticated user from the middleware
+    const creatorId = req.user.id; 
+
     // Input validation
-    if (!groupName || !members || !Array.isArray(members) || members.length < 2) {
-      return res.status(400).json({ message: 'Group name and at least two members are required.' });
+    if (!groupName || !Array.isArray(members)) {
+      return res.status(400).json({ message: 'Group name and members are required.' });
+    }
+
+    // Ensure the creator is added to the members list
+    const updatedMembers = Array.from(new Set([...members, creatorId])); // Avoid duplicates using Set
+
+    if (updatedMembers.length < 2) {
+      return res.status(400).json({ message: 'At least two unique members are required, including the creator.' });
     }
 
     // Create and save the group
     const newGroup = new Group({
       groupName,
-      users: members
+      users: updatedMembers
     });
 
     const savedGroup = await newGroup.save();
 
     // Update each user with the group reference
     await Promise.all(
-      members.map(memberId =>
+      updatedMembers.map(memberId =>
         User.findByIdAndUpdate(
           memberId,
           { $addToSet: { groups: savedGroup._id } }, // $addToSet avoids duplicates
@@ -43,6 +54,7 @@ router.post('/create/group', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
+
 
 router.get('/user/groups', authMiddleware, async (req, res) => {
     try {
