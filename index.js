@@ -26,7 +26,7 @@ connectDB()
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api',protectedRoute);
-app.use('/api/add' ,addExpenseHandler );
+app.use('/api/expense' ,addExpenseHandler );
 app.use('/api',allUserList);
 app.use('/api',createGroup);
 
