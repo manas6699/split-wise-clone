@@ -8,6 +8,18 @@ const groupSchema = new mongoose.Schema(
             required: true,
         },
 
+        created_by: {
+            user_id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+                required: true
+            },
+            name: {
+                type: String,
+                required: true
+            }
+        },
+
         // reference to the user model
         users: [
             {
