@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 
 const expenseSchema = new mongoose.Schema({
+
+  // referrance to group model
+  group_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Group",
+    required: true
+  },
   expense_amount: {
     type: Number,
     required: true

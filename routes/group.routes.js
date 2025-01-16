@@ -44,6 +44,7 @@ router.post('/create/group', authMiddleware, async (req, res) => {
       )
     );
 
+   
     res.status(201).json({
       message: 'Group created successfully!',
       group: savedGroup,
@@ -80,6 +81,8 @@ router.get('/user/groups', authMiddleware, async (req, res) => {
       res.status(500).json({ message: 'Server error', error: err.message });
     }
   });
+
+
 
 
 router.route('/allmembers/:group_id' , authMiddleware).get(getMembersinaGroup);
