@@ -1,13 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors'); 
-const authRoutes = require('./routes/auth');
 const connectDB = require('./db/dbconnection');
-const protectedRoute = require('./routes/protectedRoute');
-const addExpenseHandler = require('./routes/expenses.routes');
-const allUserList = require('./routes/userlist.routes');
-const checkexgr = require('./routes/checkexGr.routes');
-const createGroup = require('./routes/group.routes');
+
+
+const routeChanneler = require('./routeChanner/routeChanneler');
 
 require('dotenv').config();
 
@@ -19,13 +16,7 @@ app.use(bodyParser.json());
 // db connection
 connectDB();
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api', protectedRoute);
-app.use('/api/expense', addExpenseHandler);
-app.use('/api', allUserList);
-app.use('/api', createGroup);
-app.use('/api', checkexgr);
+app.use('/api' , routeChanneler)
 
 // Start Server
 const PORT = process.env.PORT || 5000;
