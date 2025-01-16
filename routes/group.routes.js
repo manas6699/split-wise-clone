@@ -5,6 +5,8 @@ const User = require('../models/user.model');
 const authMiddleware = require('../middlewares/auth.middleware');
 const getMembersinaGroup = require('../controllers/getAllMembers.controller')
 
+const editGroupHandler = require('../controllers/groupEdit.controller');
+
 // Create a new group
 // the user who created the group is automatically added in members position
 router.post('/create/group', authMiddleware, async (req, res) => {
@@ -85,7 +87,9 @@ router.get('/user/groups', authMiddleware, async (req, res) => {
 
 
 
-router.route('/allmembers/:group_id' , authMiddleware).get(getMembersinaGroup);
+router.route('/allmembers/:group_id').get(authMiddleware,getMembersinaGroup);
+
+router.route('/edit/:group_id').put(authMiddleware , editGroupHandler);
 
   
 module.exports = router;
