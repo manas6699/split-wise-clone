@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // Add this line
+const cors = require('cors'); 
 const authRoutes = require('./routes/auth');
 const connectDB = require('./db/dbconnection');
 const protectedRoute = require('./routes/protectedRoute');
