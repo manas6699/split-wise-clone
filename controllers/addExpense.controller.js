@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 
 const addExpenseHandler = async (req, res) => {
   try {
+
+    // Get the group_id from params
+    const { group_id } = req.params;
     const {
       expense_amount,
       expense_by,
@@ -14,6 +17,12 @@ const addExpenseHandler = async (req, res) => {
     } = req.body;
 
 
+    // validate group_id
+    console.log(group_id);
+
+    if (!group_id) {
+      return res.status(400).json({ message: 'Group ID is required.' });
+    }
     // Validate input fields
     if (
       !expense_amount ||
@@ -42,7 +51,7 @@ const addExpenseHandler = async (req, res) => {
       return res.status(401).json({ message: 'Invalid token.' });
     }
 
-
+console.log('Authentication process passed')
     // Calculate `you_lent` and `you_borrowed`
     let you_lent = 0;
     let you_borrowed = 0;
@@ -61,10 +70,11 @@ const addExpenseHandler = async (req, res) => {
     } else {
       return res.status(400).json({ message: 'Current user is not part of the expense group.' });
     }
-
+    console.log('Lent and borrowed  passed')
 
     // Create a new expense document
     const newExpense = new Expense({
+      group_id,
       expense_amount,
       expense_by,
       group_name,
