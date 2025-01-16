@@ -51,7 +51,6 @@ const addExpenseHandler = async (req, res) => {
       return res.status(401).json({ message: 'Invalid token.' });
     }
 
-console.log('Authentication process passed')
     // Calculate `you_lent` and `you_borrowed`
     let you_lent = 0;
     let you_borrowed = 0;
