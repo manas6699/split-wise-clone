@@ -1,13 +1,9 @@
 const Expense = require("../models/expense.model");
-
 const jwt = require("jsonwebtoken");
 
-// Edit Expense Handler
-
-// BUG lent and borrowed logic is not correct
 const editExpenseHandler = async (req, res) => {
   try {
-    const { expense_id } = req.params; // Get the expense ID from the route parameters
+    const { expense_id } = req.params; // Get the expense ID
     const {
       expense_amount,
       expense_by,
@@ -15,9 +11,9 @@ const editExpenseHandler = async (req, res) => {
       expense_title,
       member_expenses,
       equally_splitted,
-    } = req.body; // Destructure updated fields from the request body
+    } = req.body; // Get updated fields
 
-    // Validate input
+    // Validate input fields
     if (
       !expense_amount ||
       !expense_by ||
@@ -33,8 +29,6 @@ const editExpenseHandler = async (req, res) => {
 
     // Find the existing expense
     const existingExpense = await Expense.findById(expense_id);
-
-    // If the expense doesn't exist
     if (!existingExpense) {
       return res.status(404).json({ message: "Expense not found." });
     }
@@ -49,34 +43,50 @@ const editExpenseHandler = async (req, res) => {
 
     let currentUser;
     try {
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Ensure you set JWT_SECRET in your environment variables
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
       currentUser = decodedToken.name;
     } catch (err) {
       return res.status(401).json({ message: "Invalid token." });
     }
 
-    // Handle 'you_lent' and 'you_borrowed' fields
+    // Validate `member_expenses` structure
+    if (typeof member_expenses !== "object" || Array.isArray(member_expenses)) {
+      return res
+        .status(400)
+        .json({ message: "`member_expenses` must be a valid object." });
+    }
+    for (const amount of Object.values(member_expenses)) {
+      if (typeof amount !== "number" || amount < 0) {
+        return res
+          .status(400)
+          .json({ message: "All expense amounts must be valid numbers." });
+      }
+    }
+
+    // Initialize `you_lent` and `you_borrowed`
     let you_lent = 0;
     let you_borrowed = 0;
 
-    // If the current user is the one who added the expense
-    if (expense_by === existingExpense.expense_by) {
-      // Calculate 'you_lent' if the user who created the expense is lending money
+    // Calculate `you_lent` and `you_borrowed`
+    if (currentUser === expense_by) {
+      // Current user is the one who added the expense
       for (const [member, amount] of Object.entries(member_expenses)) {
-        if (member !== expense_by) {
-          you_lent += amount;
+        if (member !== currentUser) {
+          you_lent += amount; // Money lent to others
         }
       }
+    } else if (member_expenses[currentUser]) {
+      // Current user owes money
+      you_borrowed = member_expenses[currentUser];
     } else {
-      // If the current user is part of the group, calculate 'you_borrowed'
-      if (member_expenses[expense_by]) {
-        you_borrowed = member_expenses[expense_by];
-      }
+      return res
+        .status(400)
+        .json({ message: "Current user is not part of the expense group." });
     }
 
     // Update the expense document
     const updatedExpense = await Expense.findByIdAndUpdate(
-      expense_id, // Expense ID
+      expense_id,
       {
         expense_amount,
         expense_by,
@@ -87,10 +97,10 @@ const editExpenseHandler = async (req, res) => {
         you_lent,
         you_borrowed,
       },
-      { new: true, runValidators: true } // Options: return updated document and run validators
+      { new: true, runValidators: true }
     );
 
-    // Send success response
+    // Respond with success
     res.status(200).json({
       message: "Expense updated successfully.",
       expense: updatedExpense,
