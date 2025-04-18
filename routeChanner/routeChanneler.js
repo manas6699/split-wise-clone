@@ -10,7 +10,7 @@ const allUserList = require('../routes/userlist.routes');
 const groupRoutes = require('../routes/group.routes');
 const checkexgr = require('../routes/checkexGr.routes');
 const pdfRoutes = require('../routes/pdf.routes');
-const getLeadRoute = require('../routes/getLead');
+const getLeadRoute = require('../routes/getLead.routes');
 router.use('/auth', authRoutes);
 
 router.use('/protected', protectedRoute);
