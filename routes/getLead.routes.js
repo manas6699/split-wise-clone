@@ -3,10 +3,22 @@ const router = express.Router();
 
 const Leads = require('../models/getleads.model');
 
+const checkPhoneNumber = require('../utils/checkPhoneNumber');
+
 router.post('/leads', async(req,res) => {
+    if (!req.body.name || !req.body.email || !req.body.phone || !req.body.source) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+    if (!checkPhoneNumber.isValidRealisticPhoneNumber(req.body.phone)) {
+        return res.status(400).json({ message: 'You are kidding me! stop teasing me and give me your real phone number,You dummy!' });
+    }
+    if (!req.body.email.includes('@')) {
+        return res.status(400).json({ message: 'You are kidding me! stop teasing me and give me your real email,You dummy!' });
+    }
+    
     try {
-        const { name, email, phone } = req.body;
-        const newLead = new Leads({ name, email, phone });
+        const { name, email, phone , source } = req.body;
+        const newLead = new Leads({ name, email, phone, source });
         await newLead.save();
         res.status(201).json({ message: 'Lead created successfully', lead: newLead });
     } catch (error) {
