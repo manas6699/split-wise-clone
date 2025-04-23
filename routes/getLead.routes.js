@@ -13,7 +13,7 @@ router.post('/leads', async(req,res) => {
         return res.status(400).json({ message: 'You are kidding me! stop teasing me and give me your real phone number,You dummy!' });
     }
     if (!req.body.email.includes('@')) {
-        return res.status(400).json({ message: 'You are kidding me! stop teasing me and give me your real email,You dummy!' });
+        return res.status(400).json({ message: '@ is missing' });
     }
     
     try {
