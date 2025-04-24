@@ -1,11 +1,26 @@
 const express = require('express');
 const router = express.Router();
 
-const Leads = require('../models/getleads.model');
+const Leads = require('../models/lead.model');
 
 const checkPhoneNumber = require('../utils/checkPhoneNumber');
 
-router.post('/leads', async(req,res) => {
+
+const rateLimit = require('express-rate-limit');
+
+// Limit to 5 requests per IP every 15 minutes
+const leadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 requests per windowMs
+  message: {
+    message: 'Too many requests from this IP, please try again after 15 minutes.',
+  },
+  standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
+  legacyHeaders: false,  // Disable `X-RateLimit-*` headers
+});
+
+
+router.post('/leads', leadLimiter, async(req,res) => {
     if (!req.body.name || !req.body.email || !req.body.phone || !req.body.source) {
         return res.status(400).json({ message: 'All fields are required' });
     }
