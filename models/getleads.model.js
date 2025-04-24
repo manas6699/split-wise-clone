@@ -12,9 +12,8 @@ email: {
     required: true,
 },
 phone: {
-    type: Number,
+    type: String,
     required: true,
-    length: 10,
     // unique mobile number removed , infuture can implement with multiple api and download brochure / floor plans section
     // unique: true,
 },
