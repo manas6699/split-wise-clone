@@ -10,7 +10,7 @@ router.post('/leads', async(req,res) => {
         return res.status(400).json({ message: 'All fields are required' });
     }
     if (!checkPhoneNumber.isValidRealisticPhoneNumber(req.body.phone)) {
-        return res.status(400).json({ message: 'You are kidding me! stop teasing me and give me your real phone number,You dummy!' });
+        return res.status(400).json({ message: 'Please use a vaild phone number' });
     }
     if (!req.body.email.includes('@')) {
         return res.status(400).json({ message: '@ is missing' });
