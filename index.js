@@ -12,7 +12,7 @@ const app = express();
 
 const allowedOrigins = [
     'http://localhost:3000',
-    'https://www.mmrrealty.co.in/',
+    'https://www.mmrrealty.co.in',
   ];
   
   app.use(cors({
