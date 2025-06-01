@@ -1,6 +1,7 @@
+const cors = require('cors'); 
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors'); 
 const connectDB = require('./db/dbconnection');
 
 
@@ -31,6 +32,9 @@ const allowedOrigins = [
   
   
 app.use(bodyParser.json());
+
+// Serve static files from uploads folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // db connection
 connectDB();

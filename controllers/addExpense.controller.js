@@ -17,8 +17,7 @@ const addExpenseHandler = async (req, res) => {
     } = req.body;
 
 
-    // validate group_id
-    console.log(group_id);
+  
 
     if (!group_id) {
       return res.status(400).json({ message: 'Group ID is required.' });
