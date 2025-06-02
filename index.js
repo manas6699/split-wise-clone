@@ -2,8 +2,8 @@ const cors = require('cors');
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./db/dbconnection');
-
 
 const routeChanneler = require('./routeChanner/routeChanneler');
 
@@ -15,6 +15,9 @@ const allowedOrigins = [
     'http://localhost:3000',
     'https://www.mmrrealty.co.in',
   ];
+
+
+  app.use(cookieParser());
   
   app.use(cors({
     origin: function (origin, callback) {
