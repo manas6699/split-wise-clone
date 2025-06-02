@@ -17,7 +17,7 @@ const allowedOrigins = [
   ];
 
 
-  app.use(cookieParser());
+ 
   
   app.use(cors({
     origin: function (origin, callback) {
@@ -33,7 +33,7 @@ const allowedOrigins = [
     credentials: true,
   }));
   
-  
+  app.use(cookieParser());
 app.use(bodyParser.json());
 
 // Serve static files from uploads folder

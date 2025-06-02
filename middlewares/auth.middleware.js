@@ -4,6 +4,8 @@ require('dotenv').config();
 // Middleware for authenticating JWT tokens
 const authMiddleware = (req, res, next) => {
   const token = req.cookies?.token;
+console.log('Received token:', token);
+
 
   if (!token) {
     return res.status(401).json({ error: 'Access denied. No token provided.' });

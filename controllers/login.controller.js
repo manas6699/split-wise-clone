@@ -39,9 +39,9 @@ const loginUser = asyncHandler(async (req, res) => {
     // Return token in response
     res.cookie('token', token, {
       httpOnly: true,       // Prevents JS access
-      secure: true,         // Set to true if using HTTPS
-      sameSite: 'Lax',
-      path: '/',
+      // secure: true,         
+      // sameSite: 'Lax',
+      // path: '/',
       maxAge: 60 * 60 * 1000, // 1 hour
     });
     
