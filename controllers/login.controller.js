@@ -37,7 +37,16 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 
     // Return token in response
-    res.status(200).json({ token, message: 'Logged in successfully' });
+    res.cookie('token', token, {
+      httpOnly: true,       // Prevents JS access
+      secure: true,         // Set to true if using HTTPS
+      sameSite: 'Lax',
+      path: '/',
+      maxAge: 60 * 60 * 1000, // 1 hour
+    });
+    
+    res.status(200).json({ message: 'Logged in successfully' });
+    
   } catch (error) {
     console.error('Login error:', error.message);
     res.status(500).json({ message: 'Something went wrong. Please try again.' });
