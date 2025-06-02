@@ -16,9 +16,6 @@ const allowedOrigins = [
     'https://www.mmrrealty.co.in',
   ];
 
-
- 
-  
   app.use(cors({
     origin: function (origin, callback) {
       // Allow requests with no origin (e.g., mobile apps, curl)

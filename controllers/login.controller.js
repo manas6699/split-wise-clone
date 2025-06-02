@@ -38,10 +38,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // Return token in response
     res.cookie('token', token, {
-      httpOnly: true,       // Prevents JS access
-      // secure: true,         
-      // sameSite: 'Lax',
-      // path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',         // IMPORTANT for cross-origin cookies
+      path: '/',
       maxAge: 60 * 60 * 1000, // 1 hour
     });
     
