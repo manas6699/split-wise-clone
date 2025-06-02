@@ -43,7 +43,7 @@ router.post('/leads', leadLimiter, async(req,res) => {
     }
 })
 
-router.get('/getallleads', async(req,res) => {
+router.get('/getallleads', authMiddleware, async(req,res) => {
     try {
         const leads = await Leads.find();
         res.status(200).json({ message: 'Leads fetched successfully', leads });
