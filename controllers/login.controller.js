@@ -40,8 +40,6 @@ const loginUser = asyncHandler(async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'None',         // IMPORTANT for cross-origin cookies
-      path: '/',
       maxAge: 60 * 60 * 1000, // 1 hour
     });
     

@@ -7,7 +7,7 @@ const checkPhoneNumber = require('../utils/checkPhoneNumber');
 
 
 const rateLimit = require('express-rate-limit');
-const authMiddleware = require('../middlewares/auth.middleware');
+// const authMiddleware = require('../middlewares/auth.middleware');
 
 // Limit to 5 requests per IP every 15 minutes
 const leadLimiter = rateLimit({
@@ -43,7 +43,7 @@ router.post('/leads', leadLimiter, async(req,res) => {
     }
 })
 
-router.get('/getallleads', authMiddleware, async(req,res) => {
+router.get('/getallleads', async(req,res) => {
     try {
         const leads = await Leads.find();
         res.status(200).json({ message: 'Leads fetched successfully', leads });
