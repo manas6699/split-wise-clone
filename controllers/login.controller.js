@@ -36,15 +36,15 @@ const loginUser = asyncHandler(async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    // Return token in response
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true, // Required on HTTPS/Render
-      sameSite: 'none', // Required for cross-site cookies
+      secure: process.env.NODE_ENV === 'production', // Only secure in production
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      domain: process.env.COOKIE_DOMAIN || 
+             (process.env.NODE_ENV === 'production' ? '.mmrrealty.co.in' : '.localhost:3000'),
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     });
-    
     
     res.status(200).json({ message: 'Logged in successfully' });
     
