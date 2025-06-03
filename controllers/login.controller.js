@@ -41,7 +41,6 @@ const loginUser = asyncHandler(async (req, res) => {
       secure: process.env.NODE_ENV === 'production', // Only secure in production
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
-      domain: '.mmrrealty.co.in',
     });
     
     res.status(200).json({ message: 'Logged in successfully' });
