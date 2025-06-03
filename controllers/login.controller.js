@@ -36,14 +36,11 @@ const loginUser = asyncHandler(async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Only secure in production
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      path: '/',
+  
+    res.status(200).json({ 
+      message: 'Logged in successfully', 
+      token 
     });
-    
-    res.status(200).json({ message: 'Logged in successfully' });
     
   } catch (error) {
     console.error('Login error:', error.message);
