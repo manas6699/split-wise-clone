@@ -38,10 +38,13 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // Return token in response
     res.cookie('token', token, {
-      httpOnly: true,       // Prevents JS access
-      secure: true,         // Set to true if using HTTPS
-      maxAge: 60 * 60 * 1000, // 1 hour
+      httpOnly: true,
+      secure: true, // Required on HTTPS/Render
+      sameSite: 'none', // Required for cross-site cookies
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+    
     
     res.status(200).json({ message: 'Logged in successfully' });
     
