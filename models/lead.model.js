@@ -13,7 +13,8 @@ email: {
 },
 phone: {
     type: String,
-    required: true,
+    unique: true,
+    required: [true, 'Phone number is required'],
 },
 source:{
     type: String,
