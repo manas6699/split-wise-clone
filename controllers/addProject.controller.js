@@ -1,7 +1,10 @@
 // controllers/projectController.js
 const Project = require('../models/project.model');
 
+
 exports.createProject = async (req, res) => {
+  console.log('This is the entry point for testing')
+  console.log(req.files)
   try {
     const parseIfString = (value) => {
       if (typeof value === 'string') {

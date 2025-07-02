@@ -4,7 +4,6 @@ const path = require('path');
 const s3 = require('../utils/s3client'); // import the S3 client
 
 
-
 // === File Filters ===
 const fileFilters = {
   image: (req, file, cb) => {
@@ -59,7 +58,7 @@ const uploadPdf = multer({
 const uploadMixed = multer({
   storage: s3Storage,
   fileFilter: fileFilters.mixed,
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 80 * 1024 * 1024 },
 });
 
 module.exports = {
