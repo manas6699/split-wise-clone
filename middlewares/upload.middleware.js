@@ -1,24 +1,9 @@
 const multer = require('multer');
+const multerS3 = require('multer-s3');
 const path = require('path');
-const fs = require('fs');
+const s3 = require('../utils/s3client'); // import the S3 client
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
 
-// === Storage Configuration ===
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir); // All files go into /uploads
-  },
-  filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
-    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
-    cb(null, uniqueName);
-  },
-});
 
 // === File Filters ===
 const fileFilters = {
@@ -43,22 +28,36 @@ const fileFilters = {
   },
 };
 
+// === S3 Storage ===
+const s3Storage = multerS3({
+  s3,
+  bucket: process.env.AWS_BUCKET_NAME,
+  contentType: multerS3.AUTO_CONTENT_TYPE,
+  metadata: (req, file, cb) => {
+    cb(null, { fieldName: file.fieldname });
+  },
+  key: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+    cb(null, filename);
+  },
+});
+
 // === Multer Instances ===
 const uploadImage = multer({
-  storage,
+  storage: s3Storage,
   fileFilter: fileFilters.image,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
 const uploadPdf = multer({
-  storage,
+  storage: s3Storage,
   fileFilter: fileFilters.pdf,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
-// For endpoints that upload both image and PDF in one request
 const uploadMixed = multer({
-  storage,
+  storage: s3Storage,
   fileFilter: fileFilters.mixed,
   limits: { fileSize: 10 * 1024 * 1024 },
 });
