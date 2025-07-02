@@ -3,7 +3,6 @@ const multerS3 = require('multer-s3');
 const path = require('path');
 const s3 = require('../utils/s3client'); // import the S3 client
 
-
 // === File Filters ===
 const fileFilters = {
   image: (req, file, cb) => {
@@ -55,7 +54,14 @@ const uploadPdf = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
-// upload.js (at bottom)
+// ✅ THIS LINE WAS MISSING — Define uploadMixed properly
+const uploadMixed = multer({
+  storage: s3Storage,
+  fileFilter: fileFilters.mixed,
+  limits: { fileSize: 80 * 1024 * 1024 }, // 80MB total limit
+});
+
+// ✅ Combined fields upload for project creation
 const uploadProjectAssets = uploadMixed.fields([
   { name: 'backgroundImage', maxCount: 1 },
   { name: 'developerLogo', maxCount: 1 },
@@ -65,9 +71,10 @@ const uploadProjectAssets = uploadMixed.fields([
   { name: 'brochurePdf', maxCount: 1 },
 ]);
 
+// ✅ Export everything
 module.exports = {
   uploadImage,
   uploadPdf,
   uploadMixed,
-  uploadProjectAssets, // ✅ export this
+  uploadProjectAssets,
 };
