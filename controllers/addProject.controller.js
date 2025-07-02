@@ -15,12 +15,12 @@ exports.createProject = async (req, res) => {
     };
 
     // Extract file names from req.files
-    const backgroundImage = req.files['backgroundImage']?.[0]?.filename || '';
-    const developerLogo = req.files['developerLogo']?.[0]?.filename || '';
-    const galleryImages = req.files['galleryImages']?.map(file => file.filename) || [];
-    const floorPlanImages = req.files['floorPlanImages']?.map(file => file.filename) || [];
-    const floorPlanPdf = req.files['floorPlanPdf']?.[0]?.filename || '';
-    const brochurePdf = req.files['brochurePdf']?.[0]?.filename || '';
+    const backgroundImage = req.files['backgroundImage']?.[0]?.location || '';
+    const developerLogo = req.files['developerLogo']?.[0]?.location || '';
+    const galleryImages = req.files['galleryImages']?.map(file => file.location) || [];
+    const floorPlanImages = req.files['floorPlanImages']?.map(file => file.location) || [];
+    const floorPlanPdf = req.files['floorPlanPdf']?.[0]?.location || '';
+    const brochurePdf = req.files['brochurePdf']?.[0]?.location || '';
 
     const project = new Project({
       title: req.body.title,
