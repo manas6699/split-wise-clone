@@ -55,14 +55,19 @@ const uploadPdf = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
-const uploadMixed = multer({
-  storage: s3Storage,
-  fileFilter: fileFilters.mixed,
-  limits: { fileSize: 80 * 1024 * 1024 },
-});
+// upload.js (at bottom)
+const uploadProjectAssets = uploadMixed.fields([
+  { name: 'backgroundImage', maxCount: 1 },
+  { name: 'developerLogo', maxCount: 1 },
+  { name: 'galleryImages', maxCount: 10 },
+  { name: 'floorPlanImages', maxCount: 10 },
+  { name: 'floorPlanPdf', maxCount: 1 },
+  { name: 'brochurePdf', maxCount: 1 },
+]);
 
 module.exports = {
   uploadImage,
   uploadPdf,
   uploadMixed,
+  uploadProjectAssets, // ✅ export this
 };

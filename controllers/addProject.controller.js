@@ -4,7 +4,9 @@ const Project = require('../models/project.model');
 
 exports.createProject = async (req, res) => {
   console.log('This is the entry point for testing')
-  console.log(req.files)
+  console.log('FILES RECEIVED:', Object.keys(req.files || {}));
+console.log('BODY:', req.body);
+
   try {
     const parseIfString = (value) => {
       if (typeof value === 'string') {
