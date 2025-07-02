@@ -10,10 +10,7 @@ const {
 const { uploadProjectAssets, uploadMixed } = require('../middlewares/upload.middleware');
 
 // ✅ Route to create a new project with file uploads
-router.post('/create', uploadMixed.any(), (req, res) => {
-  console.log('Received file fieldnames:', req.files.map(f => f.fieldname));
-  return res.send('Check console');
-});
+router.post('/create', uploadProjectAssets, createProject);
 
 // ✅ Get project by ID
 router.get('/:id', getProjectById);
