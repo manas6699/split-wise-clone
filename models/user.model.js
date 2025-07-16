@@ -13,12 +13,19 @@ const userSchema = new mongoose.Schema(
             unique: true,
             required: true,
         },
-       
         password: {
             type: String,
             required: [true, 'Password is required']
         },
-        
+        role: {
+            type: String,
+            enum: ['admin', 'telecaller', 'salesperson', 'supervisor'],
+            required: true,
+        },
+        online: {
+                type: Boolean,
+                default: false
+        },
         groups: [
             {
                 type: mongoose.Schema.Types.ObjectId,
@@ -29,7 +36,8 @@ const userSchema = new mongoose.Schema(
     {
         timestamps: true
     }
-)
+);
+
 
 userSchema.pre("save", async function (next) {
     if(!this.isModified("password")) return next();
