@@ -15,15 +15,22 @@ router.get('/allUsers', authMiddleware, (req, res) => {
 
     // put all the users names in an object
     const User = mongoose.model('User');
-    User.find({}, 'name')
-        .then(users => {
-            let usersList = {};
-            users.forEach(user => {
-                usersList[user._id] = user.name;
-            });
-            res.json(usersList);
-        })
-        .catch(err => res.status(400).json('Error: ' + err));
+    User.find({}, 'name role online')
+  .then(users => {
+    const usersList = {};
+
+    users.forEach(user => {
+      usersList[user._id] = {
+        name: user.name,
+        role: user.role,
+        online: user.online,
+      };
+    });
+
+    res.json(usersList);
+  })
+  .catch(err => res.status(400).json({ error: err.message }));
+
 
 });
 
