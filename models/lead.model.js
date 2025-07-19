@@ -19,7 +19,12 @@ phone: {
 source:{
     type: String,
     required: true,
-}
+},
+status: {
+    type: String,
+    enum: ['assigned', 'not-assigned'],
+    default: 'not-assigned',
+},
 },
 {
     timestamps:true
