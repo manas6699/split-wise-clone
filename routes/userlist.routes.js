@@ -15,7 +15,7 @@ router.get('/allUsers', authMiddleware, (req, res) => {
 
     // put all the users names in an object
     const User = mongoose.model('User');
-    User.find({}, 'name role online')
+    User.find({}, 'name role online phone ')
   .then(users => {
     const usersList = {};
 
@@ -24,6 +24,7 @@ router.get('/allUsers', authMiddleware, (req, res) => {
         name: user.name,
         role: user.role,
         online: user.online,
+        phone: user.phone,
       };
     });
 

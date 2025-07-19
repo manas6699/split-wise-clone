@@ -33,8 +33,8 @@ router.post('/leads', leadLimiter, async(req,res) => {
     }
     
     try {
-        const { name, email, phone , source } = req.body;
-        const newLead = new Leads({ name, email, phone, source });
+        const { name, email, phone , source  } = req.body;
+        const newLead = new Leads({ name, email, phone, source  });
         await newLead.save();
         res.status(201).json({ message: 'Lead created successfully', lead: newLead });
     } catch (error) {
