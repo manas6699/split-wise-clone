@@ -14,8 +14,14 @@ const pdfRoutes = require('../routes/pdf.routes');
 const postProject = require('../routes/projects.routes');
 const getLeadRoute = require('../routes/getLead.routes');
 
+const userRolesRoutes = require('../routes/userRoles.routes');
+const assignRoutes = require('../routes/assign.routes');
 
 router.use('/auth', authRoutes);
+
+router.use('/users', userRolesRoutes);
+
+router.use('/admin' , assignRoutes);
 
 router.use('/protected', protectedRoute);
 
