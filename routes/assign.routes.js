@@ -5,12 +5,12 @@ const Lead = require('../models/lead.model');
 const router = express.Router();
 
 router.post('/assign', async (req, res) => {
-  const { lead_id, telecaller_id, telecaller_name, status, remarks, history } = req.body;
+  const { lead_id, assignee_id, assignee_name, status, remarks, history } = req.body;
 
-  if (!lead_id || !telecaller_id || !telecaller_name) {
+  if (!lead_id || !assignee_id || !assignee_name) {
     return res.status(400).json({
       success: false,
-      message: 'lead id, telecaller id, and telecaller name are required.',
+      message: 'lead id, assignee id, and assignee name are required.',
     });
   }
 
@@ -32,8 +32,8 @@ router.post('/assign', async (req, res) => {
     // 2️⃣ Create the assignment with embedded lead data
     const assign = new Assign({
       lead_id,
-      telecaller_id,
-      telecaller_name,
+      assignee_id,
+      assignee_name,
       status: status || 'assigned',
       remarks: remarks || '',
       history: history || [],
