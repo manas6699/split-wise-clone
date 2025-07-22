@@ -6,11 +6,11 @@ const AssignSchema = new Schema(
       type: String,
       required: true,
     },
-    telecaller_id: {
+    assignee_id: {
       type: String,
       required: true,
     },
-    telecaller_name: {
+    assignee_name: {
       type: String,
       required: true,
     },
