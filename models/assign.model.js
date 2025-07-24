@@ -16,8 +16,8 @@ const AssignSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['assigned', 'reassigned'],
-      default: 'assigned',
+      enum: ['assigned', 'reassigned' , 'not-assigned' , 'auto-assigned'],
+      default: 'not-assigned',
     },
     remarks: {
       type: String,
