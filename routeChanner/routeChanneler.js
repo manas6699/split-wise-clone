@@ -17,13 +17,20 @@ const getLeadRoute = require('../routes/getLead.routes');
 const userRolesRoutes = require('../routes/userRoles.routes');
 const assignRoutes = require('../routes/assign.routes');
 
+const reassignRoutes = require('../routes/reassign.routes');
+
+const CampaignRoute = require('../routes/campaign.routes')
+
 router.use('/auth', authRoutes);
 
 router.use('/users', userRolesRoutes);
 
 router.use('/admin' , assignRoutes);
+router.use('/admin' , reassignRoutes);
 
 router.use('/protected', protectedRoute);
+
+router.use('/create' , CampaignRoute);
 
 router.use('/expense', addExpenseHandler);
 
@@ -37,6 +44,8 @@ router.use('/pdf' , pdfRoutes);
 // for mmr
 router.use('/mmr', getLeadRoute);
 router.use('/mmr', postProject);
+
+
 
 module.exports = router;
 
