@@ -20,10 +20,15 @@ const assignRoutes = require('../routes/assign.routes');
 const reassignRoutes = require('../routes/reassign.routes');
 
 const CampaignRoute = require('../routes/campaign.routes')
+const fcmTokenRoutes = require('../routes/fcmToken.routes');
 
 router.use('/auth', authRoutes);
 
 router.use('/users', userRolesRoutes);
+
+// for fcm-token
+
+router.use('/push-notifications', fcmTokenRoutes);
 
 router.use('/admin' , assignRoutes);
 router.use('/admin' , reassignRoutes);
@@ -41,7 +46,7 @@ router.use('/group', groupRoutes);
 router.use('/check', checkexgr);
 router.use('/pdf' , pdfRoutes);
 
-// for mmr
+
 router.use('/mmr', getLeadRoute);
 router.use('/mmr', postProject);
 
