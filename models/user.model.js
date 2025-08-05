@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Password is required']
         },
+        fcmToken: {
+            type: String,
+        },
         role: {
             type: String,
             enum: ['admin', 'telecaller', 'salesperson', 'supervisor'],
