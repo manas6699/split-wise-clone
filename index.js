@@ -21,12 +21,9 @@ const io = socketIo(server, {
       'http://localhost:3000',
       'https://www.mmrrealty.co.in',
     ],
-    credentials: true,
+    methods: ['GET', 'POST'],
   },
 });
-
-// ✅ In-memory online user map
-const onlineUsers = new Map();
 
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
@@ -38,19 +35,26 @@ io.use((socket, next) => {
   next();
 });
 
-io.on('connection', async (socket) => {
-  const userId = socket.userId;
-  onlineUsers.set(userId, socket.id);
+app.set('io', io); 
 
-  await User.findByIdAndUpdate(userId, { online: true });
-  io.emit('update-online-status', { userId, online: true });
+io.on('connection', (socket) => {
+  console.log('✅ Socket connected:', socket.id);
 
-  socket.on('disconnect', async () => {
-    onlineUsers.delete(userId);
-    await User.findByIdAndUpdate(userId, { online: false });
-    io.emit('update-online-status', { userId, online: false });
+  socket.on('join-room', (userId) => {
+    console.log(`🔗 Socket ${socket.id} joining room: ${userId}`);
+    socket.join(userId);
+  });
+
+  socket.on("connect_error", (err) => {
+  console.error("❌ Socket connection error:", err.message);
+});
+
+
+  socket.on('disconnect', () => {
+    console.log('❌ Socket disconnected:', socket.id);
   });
 });
+
 
 
 // ✅ Define allowed origins
@@ -88,3 +92,7 @@ app.use('/api', routeChanneler);
 // ✅ Start HTTP server (not app.listen!)
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`🚀 Server running with Socket.IO on port ${PORT}`));
+
+
+
+
