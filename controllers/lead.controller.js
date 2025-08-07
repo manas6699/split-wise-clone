@@ -88,17 +88,88 @@ exports.createLead = async (req, res) => {
   }
 };
 
+
 exports.getAllLeads = async (req, res) => {
   try {
-    const leads = await Leads.find();
-    res.status(200).json({ message: 'Leads fetched successfully', leads });
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      search = '',
+      status,
+      source,
+      lead_status,
+    } = req.query;
+
+    const query = {};
+
+    // 🔍 Search by name, email or phone
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    // 🎯 Apply filters if provided
+    if (status) query.status = status;
+    if (source) query.source = source;
+    if (lead_status) query.lead_status = lead_status;
+
+    const leads = await Leads.find(query)
+      .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+
+    const total = await Leads.countDocuments(query);
+
+    res.status(200).json({
+      message: 'Leads fetched successfully',
+      leads,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (error) {
     console.error('Error fetching leads:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
+
 exports.getLeadbyId = async (req, res) => {
+ const { assigneeId } = req.params;
+  const { status } = req.query;
+
+  try {
+    // Construct query
+    const query = { assignee_id: assigneeId };
+
+    // If status is present and not empty
+    if (status && typeof status === 'string' && status.trim() !== '') {
+      query.status = status.trim().toLowerCase(); // Case normalization
+    }
+
+    console.log('💡 Final Mongo Query:', query);
+
+    // Query the database
+    const leads = await Assign.find(query).populate('lead_id');
+
+    res.status(200).json({
+      success: true,
+      count: leads.length,
+      data: leads,
+    });
+  } catch (error) {
+    console.error('❌ Error fetching leads:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+
+};
+
+exports.getLeadDetailsbyId = async (req, res) => {
   const { id } = req.params;
   try {
     const lead = await Leads.findById(id);
@@ -111,6 +182,7 @@ exports.getLeadbyId = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 exports.updateLeadDetails = async (req, res) => {
   const { id } = req.params;
@@ -125,6 +197,7 @@ exports.updateLeadDetails = async (req, res) => {
     'property_status',
     'lead_status',
     'comments',
+    'status',
   ];
 
   try {
@@ -137,10 +210,14 @@ exports.updateLeadDetails = async (req, res) => {
     });
 
     // 2️⃣ Update Lead
-    const updatedLead = await Leads.findByIdAndUpdate(id, updates, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedLead = await Leads.findByIdAndUpdate(id, {
+    ...updates,
+    status: 'processed' 
+  }, {
+    new: true,
+    runValidators: true,
+});
+
 
     if (!updatedLead) {
       return res.status(404).json({ message: 'Lead not found' });
@@ -160,6 +237,8 @@ exports.updateLeadDetails = async (req, res) => {
           'lead_details.furnished_status': updatedLead.furnished_status || '',
           'lead_details.property_status': updatedLead.property_status || '',
           'lead_details.lead_status': updatedLead.lead_status || '',
+          'lead_details.status': 'processed',
+          'status': 'processed',
           'lead_details.comments': updatedLead.comments || '',
           'lead_details.updatedAt': new Date(),
         },

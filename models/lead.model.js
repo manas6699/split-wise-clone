@@ -14,7 +14,7 @@ email: {
 },
 phone: {
     type: String,
-    unique: true,
+    // unique: true,
     required: [true, 'Phone number is required'],
 },
 
@@ -66,7 +66,7 @@ comments:{
 },
 status: {
     type: String,
-    enum: ['assigned', 'not-assigned' , 'reassigned' , 'auto-assigned'],
+    enum: ['assigned', 'not-assigned' , 'processed', 'reassigned' , 'auto-assigned'],
     default: 'not-assigned',
 },
 assigned_to: {
