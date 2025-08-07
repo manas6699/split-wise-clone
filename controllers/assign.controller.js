@@ -4,8 +4,6 @@ const Assign = require('../models/assign.model');
 const Lead = require('../models/lead.model');
 const User = require('../models/user.model');
 
-// ✅ Import your firebase-admin config
-const admin = require('../config/firebaseAdmin'); // Make sure you have initialized this properly
 
 /**
  * 📌 Create an assignment + update lead status
@@ -56,36 +54,19 @@ exports.createAssignment = async (req, res) => {
 
     await assign.save();
 
-    // ✅ Fetch the assignee to get their FCM token
-    const assignee = await User.findById(assignee_id);
-    if (!assignee || !assignee.fcmToken) {
-      console.warn('No FCM token for assignee, skipping push.');
-    } else {
-      // ✅ Send push notification using Firebase Admin SDK
-      const message = {
-        token: assignee.fcmToken,
-        notification: {
-          title: 'New Lead Assigned',
-          body: `A new lead has been assigned to you: ${lead.name || 'Lead'}`,
-        },
-        data: {
-          leadId: lead._id.toString(),
-        },
-      };
-
-      try {
-        const response = await admin.messaging().send(message);
-        console.log('✅ Push sent successfully:', response);
-      } catch (pushErr) {
-        console.error('❌ Error sending push notification:', pushErr);
-      }
-    }
+    const io = req.app.get('io');
+    io.to(assignee_id).emit('lead-assigned', {
+      title: 'New Lead Assigned',
+      message: `A new lead has been assigned to you: ${lead.name || 'Lead'}`,
+      leadId: lead._id.toString(),
+    });
 
     return res.status(201).json({
       success: true,
       message: 'Assigned successfully & lead status updated',
       data: assign,
     });
+    
   } catch (error) {
     console.error('❌ Error creating assignment:', error);
     return res.status(500).json({
