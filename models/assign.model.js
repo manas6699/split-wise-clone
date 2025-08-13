@@ -42,6 +42,8 @@ const AssignSchema = new Schema(
       preferred_configuration: String,
       preferred_floor: String,
       property_status: String,
+      schedule_date: String,
+      schedule_time: String,
       createdAt: Date,
       updatedAt: Date,
     },

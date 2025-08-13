@@ -1,36 +1,28 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-// ✅ Universal auth middleware — supports cookies OR Bearer header
 const authMiddleware = (req, res, next) => {
-  let token;
+  // Skip token check for public routes
+  const publicPaths = ['/login', '/register'];
+  if (publicPaths.includes(req.path)) {
+    return next();
+  }
 
-  // ✅ First, check Authorization header
+  // Get Authorization header
   const authHeader = req.headers['authorization'];
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    token = authHeader.split(' ')[1];
-  }
-
-  // ✅ Fallback: check cookie
-  if (!token && req.cookies?.token) {
-    token = req.cookies.token;
-  }
-
-  console.log('Received token:', token);
-
-  if (!token) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Access denied. No token provided.' });
   }
+
+  const token = authHeader.split(' ')[1]; // Remove "Bearer "
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // You can attach any user info you store in the payload:
     req.user = {
       id: decoded.id,
       name: decoded.name,
       phone: decoded.phone,
-     
     };
 
     next();

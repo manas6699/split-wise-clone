@@ -64,6 +64,14 @@ lead_status:{
 comments:{
     type: String
 },
+schedule_date: {
+  type: String,
+  default: null
+},
+schedule_time: {
+  type: String,
+  default: ''
+},
 status: {
     type: String,
     enum: ['assigned', 'not-assigned' , 'processed', 'reassigned' , 'auto-assigned'],

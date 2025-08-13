@@ -22,6 +22,8 @@ const reassignRoutes = require('../routes/reassign.routes');
 const CampaignRoute = require('../routes/campaign.routes')
 const fcmTokenRoutes = require('../routes/fcmToken.routes');
 
+const scheduleRoutes = require('../routes/schedule.routes');
+
 router.use('/auth', authRoutes);
 
 router.use('/users', userRolesRoutes);
@@ -50,7 +52,7 @@ router.use('/pdf' , pdfRoutes);
 router.use('/mmr', getLeadRoute);
 router.use('/mmr', postProject);
 
-
+router.use('/calender', scheduleRoutes);
 
 module.exports = router;
 
