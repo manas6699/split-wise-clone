@@ -10,7 +10,6 @@ name: {
 },
 email: {
     type: String,
-    required: true,
 },
 phone: {
     type: String,
