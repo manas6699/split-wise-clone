@@ -341,6 +341,15 @@ console.log('updatedLead.assignee_id:', updatedLead);
           'lead_details.schedule_time': updatedLead.schedule_time || '',
           'lead_details.updatedAt': new Date(),
         },
+        $push: {
+          history: {
+            lead_id: id,
+            // add assignee name to some parameter
+            assignee_name: req.body.assignee_id || 'Unknown',
+            updatedAt: new Date(),
+            status: updatedLead.lead_status || '',
+          },
+    },
       }
     );
 
