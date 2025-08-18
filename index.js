@@ -14,6 +14,11 @@ const app = express();
 const server = http.createServer(app); // ✅ use raw HTTP server
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+
+const webhookRoutes = require('./routes/webhook.routes');
+
+// Webhook routes
+app.use('/webhook', webhookRoutes);
 // ✅ Setup Socket.IO
 const io = socketIo(server, {
   cors: {
