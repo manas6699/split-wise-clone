@@ -1,8 +1,12 @@
-// controllers/webhookController.js
+const Lead = require('../models/leadModel');
+const axios = require('axios');
 
-// ✅ Step 1: Verification (Meta calls this first)
+// Facebook Page Access Token (store in .env)
+const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+
+// Webhook verification
 exports.verifyWebhook = (req, res) => {
-  const VERIFY_TOKEN = '12345'; // keep in .env
+  const VERIFY_TOKEN = process.env.META_VERIFY_TOKEN;
 
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
@@ -11,43 +15,56 @@ exports.verifyWebhook = (req, res) => {
   if (mode && token) {
     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
       console.log('✅ Webhook verified!');
-      return res.status(200).send(challenge); // send back the challenge
+      return res.status(200).send(challenge);
     } else {
       return res.sendStatus(403);
     }
   }
 };
 
-// ✅ Step 2: Handle lead notifications
-exports.handleWebhook = (req, res) => {
+// Handle incoming leads
+exports.handleWebhook = async (req, res) => {
   try {
-    console.log("📩 Webhook event received:", JSON.stringify(req.body, null, 2));
+    console.log('📩 Webhook Payload:', JSON.stringify(req.body, null, 2));
 
-    // Meta sends lead info in req.body.entry
-    const entries = req.body.entry || [];
+    const entry = req.body.entry?.[0];
+    const change = entry?.changes?.[0];
+    const leadgenId = change?.value?.leadgen_id;
 
-    entries.forEach(entry => {
-      const changes = entry.changes || [];
-      changes.forEach(change => {
-        if (change.field === 'leadgen') {
-          const leadgenData = change.value;
-          console.log("📌 Lead received:", leadgenData);
+    if (!leadgenId) {
+      console.log("⚠️ No leadgen_id found in payload");
+      return res.sendStatus(200);
+    }
 
-          // Example: Save to DB
-          // Lead.create({
-          //   lead_id: leadgenData.leadgen_id,
-          //   form_id: leadgenData.form_id,
-          //   created_time: leadgenData.created_time,
-          //   page_id: leadgenData.page_id
-          // });
+    // Step 1: Fetch lead details from Graph API
+    const response = await axios.get(
+      `https://graph.facebook.com/v20.0/${leadgenId}?access_token=${PAGE_ACCESS_TOKEN}`
+    );
 
-        }
-      });
+    const leadData = response.data;
+    console.log("✅ Lead Data from Graph API:", leadData);
+
+    // Step 2: Extract fields
+    let extracted = {};
+    leadData.field_data.forEach(field => {
+      extracted[field.name] = field.values[0];
     });
 
-    res.sendStatus(200); // Acknowledge receipt
+    // Step 3: Save to MongoDB
+    const newLead = new Lead({
+      name: extracted.full_name || extracted.name || "Unknown",
+      email: extracted.email,
+      phone: extracted.phone_number,
+      source: "Meta",
+      comments: extracted.message || "",
+    });
+
+    await newLead.save();
+    console.log("🎯 Lead saved to DB:", newLead);
+
+    res.status(200).json({ success: true, lead: newLead });
   } catch (error) {
-    console.error("❌ Error in webhook:", error);
+    console.error("❌ Error fetching/saving lead:", error.response?.data || error.message);
     res.sendStatus(500);
   }
 };
