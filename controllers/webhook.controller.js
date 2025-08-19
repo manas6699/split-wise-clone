@@ -1,6 +1,8 @@
 const Lead = require('../models/lead.model');
 const axios = require('axios');
 
+require('dotenv').config();
+
 // Facebook Page Access Token (store in .env)
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 
