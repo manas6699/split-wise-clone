@@ -1,4 +1,4 @@
-const Lead = require('../models/leadModel');
+const Lead = require('../models/lead.model');
 const axios = require('axios');
 
 // Facebook Page Access Token (store in .env)
