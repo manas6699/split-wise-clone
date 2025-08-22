@@ -205,83 +205,6 @@ exports.getLeadDetailsbyId = async (req, res) => {
 };
 
 
-// exports.updateLeadDetails = async (req, res) => {
-//   const { id } = req.params;
-//   const allowedFields = [
-//     'alternate_phone',
-//     'client_budget',
-//     'interested_project',
-//     'location',
-//     'preferred_floor',
-//     'preferred_configuration',
-//     'furnished_status',
-//     'property_status',
-//     'lead_status',
-//     'comments',
-//     'status',
-//     'schedule_date',
-//     'schedule_time',
-//   ];
-
-//   try {
-//     // 1️⃣ Build updates
-//     const updates = {};
-//     allowedFields.forEach(field => {
-//       if (req.body[field] !== undefined) {
-//         updates[field] = req.body[field];
-//       }
-//     });
-
-//     // 2️⃣ Update Lead
-//     const updatedLead = await Leads.findByIdAndUpdate(id, {
-//     ...updates,
-//     status: 'processed' 
-//   }, {
-//     new: true,
-//     runValidators: true,
-// });
-
-
-//     if (!updatedLead) {
-//       return res.status(404).json({ message: 'Lead not found' });
-//     }
-
-//     // 3️⃣ Update Assign(s) linked to this Lead
-//     await Assign.updateMany(
-//       { lead_id: id }, // your Assign schema stores `lead_id` as String
-//       {
-//         $set: {
-//           'lead_details.alternate_phone': updatedLead.alternate_phone || '',
-//           'lead_details.client_budget': updatedLead.client_budget || '',
-//           'lead_details.interested_project': updatedLead.interested_project || '',
-//           'lead_details.location': updatedLead.location || '',
-//           'lead_details.preferred_floor': updatedLead.preferred_floor || '',
-//           'lead_details.preferred_configuration': updatedLead.preferred_configuration || '',
-//           'lead_details.furnished_status': updatedLead.furnished_status || '',
-//           'lead_details.property_status': updatedLead.property_status || '',
-//           'lead_details.lead_status': updatedLead.lead_status || '',
-//           'lead_details.status': 'processed',
-//           'status': 'processed',
-//           'lead_details.comments': updatedLead.comments || '',
-//           'lead_details.schedule_date': updatedLead.schedule_date || null,
-//           'lead_details.schedule_time': updatedLead.schedule_time || '',
-//           'lead_details.updatedAt': new Date(),
-//         },
-//       }
-//     );
-
-//     res.status(200).json({
-//       message: 'Lead and Assign updated successfully',
-//       lead: updatedLead,
-//     });
-//   } catch (error) {
-//     console.error('Error updating lead:', error);
-//     res.status(500).json({ message: 'Server error', error: error.message });
-//   }
-// };
-
-
-
 exports.updateLeadDetails = async (req, res) => {
   const { id } = req.params;
   const allowedFields = [
@@ -320,6 +243,14 @@ exports.updateLeadDetails = async (req, res) => {
       return res.status(404).json({ message: 'Lead not found' });
     }
 console.log('updatedLead.assignee_id:', updatedLead);
+//     // ✅ Step 3: Get assignee from Assigns
+    const assign = await Assign.findOne({ lead_id: id }, 'assignee_id');
+    let assignee_name = 'Unknown';
+
+    if (assign && assign.assignee_id) {
+      const assigneeDoc = await User.findById(assign.assignee_id, 'name');
+      assignee_name = assigneeDoc ? assigneeDoc.name : 'Unknown';
+    }
     // 3️⃣ Update Assign(s) linked to this Lead
     await Assign.updateMany(
       { lead_id: id },
@@ -345,9 +276,10 @@ console.log('updatedLead.assignee_id:', updatedLead);
           history: {
             lead_id: id,
             // add assignee name to some parameter
-            assignee_name: req.body.assignee_id || 'Unknown',
+            assignee_name,
             updatedAt: new Date(),
             status: updatedLead.lead_status || '',
+            remarks: updatedLead.comments || '',
           },
     },
       }
