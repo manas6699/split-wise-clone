@@ -16,6 +16,7 @@ const leadLimiter = rateLimit({
 router.post('/leads', leadLimiter, leadController.createLead);
 router.get('/getallleads', leadController.getAllLeads);
 router.get('/getlead/:assigneeId', leadController.getLeadbyId);
+// this handles fix card data
 router.get('/getleadDetails/:id', leadController.getLeadDetailsbyId);
 router.put('/leads/:id', leadController.updateLeadDetails);
 
