@@ -9,7 +9,7 @@ const Schedule = require('../models/schedule.model');
 
 
 exports.createLead = async (req, res) => {
-  const { name, email, phone, source } = req.body;
+  const { name, email, phone, source , projectSource } = req.body;
 
   // Step 1: Validate required fields
   if (!name || !email || !phone || !source) {
@@ -32,6 +32,7 @@ exports.createLead = async (req, res) => {
       phone,
       source,
       status: 'not-assigned',
+      projectSource
     });
 
     // Step 3: Check if campaign supports auto-assign
@@ -190,6 +191,8 @@ exports.getLeadbyId = async (req, res) => {
 
 };
 
+
+// this handles fixcard data
 exports.getLeadDetailsbyId = async (req, res) => {
   const { id } = req.params;
   try {
