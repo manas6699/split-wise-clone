@@ -19,10 +19,15 @@ const assignRoutes = require('../routes/assign.routes');
 
 const reassignRoutes = require('../routes/reassign.routes');
 
+const getOldLeads = require("../routes/enquiry.routes")
+
 const CampaignRoute = require('../routes/campaign.routes')
 const fcmTokenRoutes = require('../routes/fcmToken.routes');
 
 const scheduleRoutes = require('../routes/schedule.routes');
+
+
+
 
 router.use('/auth', authRoutes);
 
@@ -53,6 +58,8 @@ router.use('/mmr', getLeadRoute);
 router.use('/mmr', postProject);
 
 router.use('/calender', scheduleRoutes);
+router.use('/admin' , getOldLeads);
+
 
 module.exports = router;
 
