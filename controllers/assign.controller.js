@@ -151,7 +151,47 @@ exports.getAssignmentsByAssignee = async (req, res) => {
   }
 
   try {
-    const assigns = await Assign.find({ assignee_id });
+    const queryObj = { assignee_id };
+    const { startDate, endDate, ...filters } = req.query;
+
+    // ✅ Date range filter (based on assignment.createdAt)
+    if (startDate || endDate) {
+      queryObj.createdAt = {};
+      if (startDate) queryObj.createdAt.$gte = new Date(startDate);
+
+      if (endDate) {
+        let end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // include full day
+        queryObj.createdAt.$lte = end;
+      }
+    }
+
+    // ✅ Dynamic filters (nested in lead_details OR top-level)
+    for (const key in filters) {
+      if (filters[key]) {
+        if (
+          [
+            "phone",
+            "email",
+            "name",
+            "source",
+            "status", // ✅ match lead_details.status (not lead_status)
+            "location",
+            "preferred_floor",
+            "preferred_configuration",
+            "property_status"
+          ].includes(key)
+        ) {
+          queryObj[`lead_details.${key}`] = filters[key]; // nested field
+        } else {
+          queryObj[key] = filters[key]; // top-level field
+        }
+      }
+    }
+
+    // ✅ Apply filters in the query
+    const assigns = await Assign.find(queryObj);
+
     return res.status(200).json({
       success: true,
       count: assigns.length,
@@ -166,6 +206,7 @@ exports.getAssignmentsByAssignee = async (req, res) => {
     });
   }
 };
+
 
 exports.getAssignmentHistoryById = async (req, res) => {
   const { id } = req.params;
