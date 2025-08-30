@@ -169,7 +169,7 @@ exports.getLeadsByUser = async (req, res) => {
     };
 
     // ✅ Date range filter
-   if (startDate || endDate) {
+if (startDate || endDate) {
   const start = startDate ? new Date(startDate.split("-").reverse().join("-")) : null;
   const end = endDate ? new Date(endDate.split("-").reverse().join("-")) : null;
 
@@ -179,15 +179,30 @@ exports.getLeadsByUser = async (req, res) => {
   if (start) {
     query.$expr.$and.push({
       $gte: [
-        { $dateFromString: { dateString: "$enq_date", format: "%d-%m-%Y" } },
+        {
+          $dateFromString: {
+            dateString: "$enq_date",
+            format: "%d-%m-%Y %H:%M", // 👈 matches "27-06-2025 14:31"
+            onError: null,
+            onNull: null
+          }
+        },
         start
       ]
     });
   }
+
   if (end) {
     query.$expr.$and.push({
       $lte: [
-        { $dateFromString: { dateString: "$enqdate2", format: "%d-%m-%Y" } },
+        {
+          $dateFromString: {
+            dateString: "$enq_date",
+            format: "%d-%m-%Y %H:%M",
+            onError: null,
+            onNull: null
+          }
+        },
         end
       ]
     });
