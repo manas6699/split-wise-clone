@@ -352,7 +352,32 @@ exports.createOldAssigntoNew = async (req, res) => {
 };
 
 
+exports.getCombinedCount = async (req, res) => {
+  try {
+    // run both counts in parallel for efficiency
+    const [leadCount, assignCount] = await Promise.all([
+      LeadWithLatestDisposition.countDocuments(),
+      Assign.countDocuments(),
+    ]);
 
+    const totalCount = leadCount + assignCount;
+
+    return res.status(200).json({
+      success: true,
+      counts: {
+        leadCount,
+        assignCount,
+        totalCount,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching combined count:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
 
 // New collection to store final joined docs
