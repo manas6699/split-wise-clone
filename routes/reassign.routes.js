@@ -5,32 +5,19 @@ const Lead = require('../models/lead.model');
 const router = express.Router();
 
 router.post('/reassign', async (req, res) => {
-  const {lead_id , assign_id, assignee_id, assignee_name, remarks, history_entry } = req.body;
+  const { lead_id, assignee_id, assignee_name, remarks, history_entry } = req.body;
 
-  if (!lead_id || !assign_id || !assignee_id || !assignee_name) {
+  if (!lead_id || !assignee_id || !assignee_name) {
     return res.status(400).json({
       success: false,
-      message: 'lead_id, assign_id, assignee_id, and assignee_name are required.',
+      message: 'lead_id, assignee_id, and assignee_name are required.',
     });
   }
 
   try {
-    // get the lead and update it's status to 'reassigned'
-    const lead = await Lead.findByIdAndUpdate(
-        lead_id,
-        { status: 'reassigned' }, 
-        { new: true }
-    )
-
-    if (!lead) {
-      return res.status(404).json({
-        success: false,
-        message: 'Lead not found.',
-      });
-    }
-    // ✅ Update the Assign document
-    const updatedAssign = await Assign.findByIdAndUpdate(
-      assign_id,
+    // ✅ Update Assign document by lead_id
+    const updatedAssign = await Assign.findOneAndUpdate(
+      { lead_id }, // find the assign linked to this lead
       {
         $set: {
           assignee_id,
@@ -48,13 +35,13 @@ router.post('/reassign', async (req, res) => {
     if (!updatedAssign) {
       return res.status(404).json({
         success: false,
-        message: 'Assign document not found.',
+        message: 'Assign document not found for this lead.',
       });
     }
 
-    // ✅ Update the related Lead document too
+    // ✅ Update Lead document status
     await Lead.findByIdAndUpdate(
-      updatedAssign.lead_id,
+      lead_id,
       { status: 'reassigned' },
       { new: true }
     );

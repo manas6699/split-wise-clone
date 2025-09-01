@@ -1,5 +1,11 @@
 const express = require("express");
-const { getOldLeads , getLeadsByUser , createOldAssigntoNew , buildLeadWithDisposition } = require("../controllers/enquiry.controller");
+const { 
+    getOldLeads , 
+    getLeadsByUser , 
+    createOldAssigntoNew , 
+    getCombinedCount ,
+    buildLeadWithDisposition , 
+} = require("../controllers/enquiry.controller");
 
 const router = express.Router();
 
@@ -8,6 +14,9 @@ router.get("/oL", getOldLeads);
 
 router.get("/telecaller" , getLeadsByUser);
 router.post("/assign/old/to/telecaller" , createOldAssigntoNew);
+
+// get all count for admin
+router.get("/count" , getCombinedCount);
 
 // legacy endpoint alart!!!!!!!!! Don't touch it!!
 // {{baseURL}}/api/admin/disposition
