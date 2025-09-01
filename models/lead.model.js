@@ -50,18 +50,20 @@ property_status:{
 },
 lead_status:{
     type: String,
-    enum:[  'Busy',
-    'Not responding',
-    'Network Error',
-    'Not Valid',
-    'Asked Follow-Up',
-    'Redirection to voice-mail',
-    'Site Visit Fixed',
-    'Sold',
-    'Connected with Whatsapp and sent Brochure',
-    'Site Visit Done',
-    'Site Visit Cancelled',
-    'Site Visit Rescheduled',]
+    enum:[  
+        'Busy',
+        'Not responding',
+        'Network Error',
+        'Not Valid',
+        'Asked Follow-Up',
+        'Redirection to voice-mail',
+        'Site Visit Fixed',
+        'Sold',
+        'Connected with Whatsapp and sent Brochure',
+        'Site Visit Done',
+        'Site Visit Cancelled',
+        'Site Visit Rescheduled',
+]
 },
 comments:{
     type: String
