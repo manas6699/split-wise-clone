@@ -80,10 +80,10 @@ exports.createAssignment = async (req, res) => {
 /**
  * 📌 Get ALL assignments
  */
-exports.getAllAssignments = async (req, res) => {
+exports.getAllAssignments = async (req, res) => { 
   try {
     const queryObj = {};
-    const { startDate, endDate, ...filters } = req.query;
+    const { startDate, endDate, status, ...filters } = req.query;
 
     // ✅ Date range filter (based on createdAt of assignment)
     if (startDate || endDate) {
@@ -98,6 +98,10 @@ exports.getAllAssignments = async (req, res) => {
     }
 
 
+     // ✅ Top-level status filter (assignment.status)
+    if (status) {
+      queryObj.status = status;
+    }
     // ✅ Dynamic filters (support nested fields in lead_details)
     for (const key in filters) {
       if (filters[key]) {
@@ -109,6 +113,7 @@ exports.getAllAssignments = async (req, res) => {
           "lead_status", 
           "location" , 
           "preferred_floor", 
+          "status",
           "preferred_configuration",
           "property_status"
         ].includes(key)) {
@@ -175,7 +180,8 @@ exports.getAssignmentsByAssignee = async (req, res) => {
             "email",
             "name",
             "source",
-            "status", // ✅ match lead_details.status (not lead_status)
+            "status",            // ✅ lead_details.status
+            "lead_status",       // ✅ NEW filter for lead_details.lead_status
             "location",
             "preferred_floor",
             "preferred_configuration",
@@ -206,6 +212,7 @@ exports.getAssignmentsByAssignee = async (req, res) => {
     });
   }
 };
+
 
 
 exports.getAssignmentHistoryById = async (req, res) => {
