@@ -26,7 +26,8 @@ const fcmTokenRoutes = require('../routes/fcmToken.routes');
 
 const scheduleRoutes = require('../routes/schedule.routes');
 
-
+const postProjectNames = require('../routes/projectName.routes')
+const locationNames = require('../routes/location.routes')
 
 
 router.use('/auth', authRoutes);
@@ -59,6 +60,10 @@ router.use('/mmr', postProject);
 
 router.use('/calender', scheduleRoutes);
 router.use('/admin' , getOldLeads);
+
+router.use('/post/addproject' , postProjectNames);
+
+router.use('/locations' , locationNames);
 
 
 module.exports = router;
