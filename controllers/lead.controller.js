@@ -224,6 +224,7 @@ exports.updateLeadDetails = async (req, res) => {
     'status',
     'schedule_date',
     'schedule_time',
+    'source'
   ];
 
   try {
@@ -270,6 +271,7 @@ console.log('updatedLead.assignee_id:', updatedLead);
           'lead_details.lead_status': updatedLead.lead_status || '',
           'lead_details.status': 'processed',
           'status': 'processed',
+          'lead_details.source': updatedLead.interested_project || '',
           'lead_details.comments': updatedLead.comments || '',
           'lead_details.schedule_date': updatedLead.schedule_date || null,
           'lead_details.schedule_time': updatedLead.schedule_time || '',
