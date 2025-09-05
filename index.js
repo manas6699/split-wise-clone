@@ -26,7 +26,8 @@ const io = socketIo(server, {
       'http://localhost:3000',
       'https://www.mmrrealty.co.in',
       'http://real-estate-git-main-manas6699s-projects.vercel.app',
-      'https://real-estate-p5xlj9nkx-manas6699s-projects.vercel.app'
+      'https://real-estate-p5xlj9nkx-manas6699s-projects.vercel.app',
+      'http://mmrrealty.co.in:3000',
     ],
     methods: ['GET', 'POST'],
   },
@@ -70,6 +71,7 @@ const allowedOrigins = [
   'https://www.mmrrealty.co.in',
   'http://real-estate-git-main-manas6699s-projects.vercel.app',
   'https://real-estate-p5xlj9nkx-manas6699s-projects.vercel.app',
+  'http://mmrrealty.co.in:3000',
 ];
 
 // ✅ Configure CORS
