@@ -27,7 +27,6 @@ const io = socketIo(server, {
       'https://www.mmrrealty.co.in',
       'http://real-estate-git-main-manas6699s-projects.vercel.app',
       'https://real-estate-p5xlj9nkx-manas6699s-projects.vercel.app',
-      'https://www.mmrrealty.co.in',
     ],
     methods: ['GET', 'POST'],
   },
@@ -71,7 +70,6 @@ const allowedOrigins = [
   'https://www.mmrrealty.co.in',
   'http://real-estate-git-main-manas6699s-projects.vercel.app',
   'https://real-estate-p5xlj9nkx-manas6699s-projects.vercel.app',
-  'https://www.mmrrealty.co.in',
 ];
 
 // ✅ Configure CORS
@@ -103,7 +101,3 @@ app.use('/api', routeChanneler);
 // ✅ Start HTTP server (not app.listen!)
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`🚀 Server running with Socket.IO on port ${PORT}`));
-
-
-
-
