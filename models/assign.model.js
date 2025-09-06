@@ -32,6 +32,7 @@ const AssignSchema = new Schema(
       phone: String,
       source: String,
       status: String,
+      lead_type: String,
       comments: String,
       location: String,
       alternate_phone: String,

@@ -73,6 +73,9 @@ lead_status:{
         'Not interested'
 ]
 },
+lead_type:{
+    type: String
+},
 comments:{
     type: String
 },

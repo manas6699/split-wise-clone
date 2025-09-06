@@ -47,6 +47,7 @@ exports.createAssignment = async (req, res) => {
         phone: lead.phone,
         source: lead.source,
         status: lead.status,
+        lead_type: lead.lead_type,
         createdAt: lead.createdAt,
         updatedAt: lead.updatedAt,
       },
@@ -111,6 +112,7 @@ exports.getAllAssignments = async (req, res) => {
           "name", 
           "source", 
           "lead_status", 
+          "lead_type",
           "location" , 
           "preferred_floor", 
           "status",
@@ -180,8 +182,9 @@ exports.getAssignmentsByAssignee = async (req, res) => {
             "email",
             "name",
             "source",
-            "status",            // ✅ lead_details.status
-            "lead_status",       // ✅ NEW filter for lead_details.lead_status
+            "status",            
+            "lead_status",
+            "lead_type",
             "location",
             "preferred_floor",
             "preferred_configuration",
