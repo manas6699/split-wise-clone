@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const leadSchema = new mongoose.Schema({
 
 
@@ -54,7 +53,7 @@ lead_status:{
         'Not responding',
         'Network Error',
         'Not Valid',
-        'Follow-Up',
+        'Under Follow Up',
         'Redirection to voice-mail',
         'Site Visit Fixed',
         'Sold',

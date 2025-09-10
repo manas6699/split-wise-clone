@@ -31,6 +31,8 @@ const locationNames = require('../routes/location.routes')
 
 const sourceNames = require('../routes/sourceName.routes')
 
+const bulkLeadUpload = require('../routes/bulkLeadUpload.routes')
+
 
 router.use('/auth', authRoutes);
 
@@ -68,5 +70,8 @@ router.use('/post/addproject' , postProjectNames);
 router.use('/locations' , locationNames);
 
 router.use('/sources' , sourceNames);
+router.use('/upload' , bulkLeadUpload);
+
+
 module.exports = router;
 
