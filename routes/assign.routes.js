@@ -2,6 +2,7 @@ const express = require('express');
 
 const {
   createAssignment,
+  bulkAssign,
   getAllAssignments,
   getAssignmentsByAssignee,
   getAssignmentHistoryById
@@ -11,6 +12,9 @@ const router = express.Router();
 
 // ➜ POST /api/assign
 router.post('/assign', createAssignment);
+
+// Bulk assign route
+router.post('/bulk/assign' ,bulkAssign );
 
 // ➜ GET /api/all/assigns
 router.get('/all/assigns', getAllAssignments);

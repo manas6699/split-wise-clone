@@ -78,6 +78,87 @@ exports.createAssignment = async (req, res) => {
   }
 };
 
+exports.bulkAssign = async (req, res) => {
+  const { lead_ids, assignee_id, assignee_name, status, remarks, history } = req.body;
+
+  if (!lead_ids || !Array.isArray(lead_ids) || lead_ids.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'lead_ids (array) is required.',
+    });
+  }
+
+  if (!assignee_id || !assignee_name) {
+    return res.status(400).json({
+      success: false,
+      message: 'assignee_id and assignee_name are required.',
+    });
+  }
+
+  try {
+    // ✅ Fetch all leads
+    const leads = await Lead.find({ _id: { $in: lead_ids } });
+
+    if (leads.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No valid leads found.',
+      });
+    }
+
+    // ✅ Update all leads to assigned
+    await Lead.updateMany(
+      { _id: { $in: lead_ids } },
+      { $set: { status: 'assigned' } }
+    );
+
+    // ✅ Create assignment records
+    const assignments = leads.map((lead) => ({
+      lead_id: lead._id,
+      assignee_id,
+      assignee_name,
+      status: status || 'assigned',
+      remarks: remarks || '',
+      history: history || [],
+      lead_details: {
+        name: lead.name,
+        email: lead.email,
+        phone: lead.phone,
+        source: lead.source,
+        status: 'assigned',
+        lead_type: lead.lead_type,
+        createdAt: lead.createdAt,
+        updatedAt: lead.updatedAt,
+      },
+    }));
+
+    await Assign.insertMany(assignments);
+
+    // ✅ Send socket notification to telecaller
+    const io = req.app.get('io');
+    io.to(assignee_id).emit('bulk-lead-assigned', {
+      title: 'Bulk Leads Assigned',
+      message: `${leads.length} leads have been assigned to you.`,
+      leadIds: leads.map((l) => l._id.toString()),
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: `${leads.length} leads assigned successfully & statuses updated.`,
+      data: assignments,
+    });
+
+  } catch (error) {
+    console.error('❌ Error in bulk assignment:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message,
+    });
+  }
+};
+
+
 /**
  * 📌 Get ALL assignments
  */
