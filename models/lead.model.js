@@ -61,6 +61,7 @@ lead_status:{
         'Site Visit Cancelled',
         'Site Visit Rescheduled',
         'Already Booked',
+        'Booked',
         'Call Back',
         'Fraud',
         'Agent Switch',
