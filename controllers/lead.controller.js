@@ -2,6 +2,7 @@ const Leads = require('../models/lead.model');
 const Campaign = require('../models/campaign.model');
 const RoundRobinState = require('../models/roundrobin.model');
 const Assign = require('../models/assign.model');
+const mongoose = require("mongoose");
 const User = require('../models/user.model');
 const checkPhoneNumber = require('../utils/checkPhoneNumber');
 
@@ -324,6 +325,7 @@ const [hour, minute] = schedule_time.split(':').map(Number);
           start: startDate.toISOString(),
           end: endDate.toISOString(),
           lead_id: id,
+          assign_id: assign._id,
           assignee_id: req.body.assignee_id || '',
           remarks: updatedLead.comments || '',
         },
@@ -339,4 +341,25 @@ const [hour, minute] = schedule_time.split(':').map(Number);
     console.error('Error updating lead:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
+};
+
+
+exports.getBulkLeads = async (req, res) => {
+    try {
+        const { lead_ids } = req.body;
+
+        if (!lead_ids || !Array.isArray(lead_ids) || lead_ids.length === 0) {
+            return res.status(400).json({ success: false, message: "lead_ids array is required" });
+        }
+        // ✅ Find leads by _id
+        const leads = await Leads.find({ _id: { $in: lead_ids } });
+
+        return res.status(200).json({
+            success: true,
+            data: leads,
+        });
+    } catch (error) {
+        console.error("Error in getBulkLeads:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
 };
