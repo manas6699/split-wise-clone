@@ -4,6 +4,7 @@ const {
   createAssignment,
   bulkAssign,
   getAllAssignments,
+  getMultipleAssigns,
   getAssignmentsByAssignee,
   getAssignmentHistoryById
 } = require('../controllers/assign.controller');
@@ -24,5 +25,8 @@ router.get('/assigns/:assignee_id', getAssignmentsByAssignee);
 
 // get assign history
 router.get('/assigns/history/:id', getAssignmentHistoryById);
+
+// get multiple assigns
+router.post('/getAll/assigns' , getMultipleAssigns);
 
 module.exports = router;
