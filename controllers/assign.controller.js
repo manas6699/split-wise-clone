@@ -332,3 +332,20 @@ exports.getAssignmentHistoryById = async (req, res) => {
     });
   }
 }
+
+exports.getMultipleAssigns = async(req , res) => {
+  try {
+    const {assign_ids} = req.body;
+    if(!assign_ids || !Array.isArray(assign_ids) || assign_ids.length === 0){
+      return res.status(400).json({ success: false, message: "Assign id array is required" });
+    }
+    const assigns = await Assign.find({_id: { $in: assign_ids}});
+    return res.status(200).json({
+      success: true,
+      data: assigns
+    });
+  } catch (error) {
+      console.error("Error in geting bulk assign:", error);
+      return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
