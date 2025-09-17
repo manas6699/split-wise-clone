@@ -26,6 +26,11 @@ const ScheduleSchema = new mongoose.Schema(
       ref: "Lead",
       required: true
     },
+    assign_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Assign",
+      required: true
+    },
     remarks: {
       type: String,
       trim: true
