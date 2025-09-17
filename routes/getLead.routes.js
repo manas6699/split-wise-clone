@@ -20,5 +20,8 @@ router.get('/getlead/:assigneeId', leadController.getLeadbyId);
 router.get('/getleadDetails/:id', leadController.getLeadDetailsbyId);
 router.put('/leads/:id', leadController.updateLeadDetails);
 
+// route to get multiple leads
+router.post('/get/multipleLeadDetails' , leadController.getBulkLeads);
+
 
 module.exports = router;
