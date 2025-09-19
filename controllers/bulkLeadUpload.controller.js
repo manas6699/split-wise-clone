@@ -124,6 +124,7 @@ exports.bulkUploadAndAssignLeads = async (req, res) => {
             email: lead.email || "",
             phone: lead.phone || "",
             source: lead.source || "",
+            projectSource: lead.projectSource || "",
             status: "assigned", // updated
             lead_type: "",
             createdAt: lead.createdAt,
@@ -135,14 +136,6 @@ exports.bulkUploadAndAssignLeads = async (req, res) => {
         // Step 3 → Update lead status
         lead.status = "assigned";
         await lead.save();
-
-        // Step 4 → Notify via socket
-        const io = req.app.get("io");
-        io.to(assignee_id).emit("lead-assigned", {
-          title: "New Lead Assigned",
-          message: `A new lead has been assigned to you: ${lead.name || "Lead"}`,
-          leadId: lead._id.toString(),
-        });
 
         successCount++;
       } catch (err) {
