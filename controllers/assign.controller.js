@@ -46,6 +46,7 @@ exports.createAssignment = async (req, res) => {
         email: lead.email,
         phone: lead.phone,
         source: lead.source,
+        projectSource: lead.projectSource,
         status: lead.status,
         lead_type: lead.lead_type,
         createdAt: lead.createdAt,
