@@ -22,7 +22,6 @@ const reassignRoutes = require('../routes/reassign.routes');
 const getOldLeads = require("../routes/enquiry.routes")
 
 const CampaignRoute = require('../routes/campaign.routes')
-const fcmTokenRoutes = require('../routes/fcmToken.routes');
 
 const scheduleRoutes = require('../routes/schedule.routes');
 
@@ -37,10 +36,6 @@ const bulkLeadUpload = require('../routes/bulkLeadUpload.routes')
 router.use('/auth', authRoutes);
 
 router.use('/users', userRolesRoutes);
-
-// for fcm-token
-
-router.use('/push-notifications', fcmTokenRoutes);
 
 router.use('/admin' , assignRoutes);
 router.use('/admin' , reassignRoutes);
