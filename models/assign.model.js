@@ -14,6 +14,12 @@ const AssignSchema = new Schema(
       type: String,
       required: true,
     },
+    asssigned_by: {
+      type: String,
+    },
+    assign_mode:{
+      type : String,
+    },
     status: {
       type: String,
       enum: ['assigned', 'reassigned' , 'not-assigned' , 'auto-assigned'],

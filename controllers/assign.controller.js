@@ -9,7 +9,7 @@ const User = require('../models/user.model');
  * 📌 Create an assignment + update lead status
  */
 exports.createAssignment = async (req, res) => {
-  const { lead_id, assignee_id, assignee_name, status, remarks, history } = req.body;
+  const { lead_id, assignee_id, assignee_name, asssigned_by , status, remarks, history } = req.body;
 
   if (!lead_id || !assignee_id || !assignee_name) {
     return res.status(400).json({
@@ -39,6 +39,8 @@ exports.createAssignment = async (req, res) => {
       assignee_id,
       assignee_name,
       status: status || 'assigned',
+      assign_mode: 'Atomic',
+      asssigned_by,
       remarks: remarks || '',
       history: history || [],
       lead_details: {
@@ -80,7 +82,7 @@ exports.createAssignment = async (req, res) => {
 };
 
 exports.bulkAssign = async (req, res) => {
-  const { lead_ids, assignee_id, assignee_name, status, remarks, history } = req.body;
+  const { lead_ids, assignee_id, assignee_name, asssigned_by , status, remarks, history } = req.body;
 
   if (!lead_ids || !Array.isArray(lead_ids) || lead_ids.length === 0) {
     return res.status(400).json({
@@ -118,6 +120,8 @@ exports.bulkAssign = async (req, res) => {
       lead_id: lead._id,
       assignee_id,
       assignee_name,
+      assign_mode: 'Bulk',
+      asssigned_by: asssigned_by,
       status: status || 'assigned',
       remarks: remarks || '',
       history: history || [],
@@ -134,14 +138,6 @@ exports.bulkAssign = async (req, res) => {
     }));
 
     await Assign.insertMany(assignments);
-
-    // ✅ Send socket notification to telecaller
-    const io = req.app.get('io');
-    io.to(assignee_id).emit('bulk-lead-assigned', {
-      title: 'Bulk Leads Assigned',
-      message: `${leads.length} leads have been assigned to you.`,
-      leadIds: leads.map((l) => l._id.toString()),
-    });
 
     return res.status(201).json({
       success: true,

@@ -116,6 +116,7 @@ exports.bulkUploadAndAssignLeads = async (req, res) => {
           lead_id: lead._id,
           assignee_id,
           assignee_name,
+          assign_mode: "Bulk",
           status: "assigned",
           remarks: "",
           history: history,
