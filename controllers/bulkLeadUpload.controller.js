@@ -30,15 +30,14 @@ exports.bulkUploadLeads = async (req, res) => {
 
     // Filter out unwanted fields
     const leads = parsed.data.map((row) => ({
-      name: row.name?.trim(),
-      email: row.email,
-      phone: row.phone,
-      source: row.source,
-      projectSource: row.projectSource,
+      name: row["NAME"]?.trim() || "",
+      email: row["EMAIL"] || "",
+      phone: row["PHONE"] || "",
+      source: row["PROJECT NAME"] || "",
+      projectSource: row["LEAD SOURCE"] || "",
       schedule_date: null,
       schedule_time: "",
       status: "not-assigned"
-      // excluded: schedule_date, schedule_time, status, createdAt, updatedAt
     }));
 
     // Insert into MongoDB
@@ -100,11 +99,11 @@ exports.bulkUploadAndAssignLeads = async (req, res) => {
       try {
         // Step 1 → Insert lead
         const lead = new Lead({
-          name: row.name?.trim(),
-          email: row.email,
-          phone: row.phone,
-          source: row.source,
-          projectSource: row.projectSource,
+          name: row["NAME"]?.trim() || "",
+          email: row["EMAIL"] || "",
+          phone: row["PHONE"] || "",
+          source: row["PROJECT NAME"] || "",
+          projectSource: row["LEAD SOURCE"] || "",
           schedule_date: null,
           schedule_time: "",
           status: "not-assigned",
