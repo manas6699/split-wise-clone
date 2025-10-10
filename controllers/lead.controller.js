@@ -122,12 +122,15 @@ exports.getAllLeads = async (req, res) => {
       search = '',
       status,
       source,
+      projectSource,
       lead_status,
+      startDate,
+      endDate,
     } = req.query;
 
     const query = {};
 
-    // 🔍 Search by name, email or phone
+    // 🔍 Search by name, email, or phone
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -138,9 +141,25 @@ exports.getAllLeads = async (req, res) => {
 
     // 🎯 Apply filters if provided
     if (status) query.status = status;
+    if (projectSource) query.projectSource = projectSource;
     if (source) query.source = source;
     if (lead_status) query.lead_status = lead_status;
 
+    // 🗓️ Date range filter
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) {
+        query.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        // include full end day by setting time to 23:59:59
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = end;
+      }
+    }
+
+    // 📦 Fetch filtered leads with pagination
     const leads = await Leads.find(query)
       .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 })
       .skip((page - 1) * limit)
@@ -160,6 +179,7 @@ exports.getAllLeads = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 
 exports.getLeadbyId = async (req, res) => {
