@@ -130,6 +130,7 @@ exports.bulkAssign = async (req, res) => {
         email: lead.email,
         phone: lead.phone,
         source: lead.source,
+         projectSource: lead.projectSource,
         status: 'assigned',
         lead_type: lead.lead_type,
         createdAt: lead.createdAt,
