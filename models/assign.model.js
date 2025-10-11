@@ -47,6 +47,8 @@ const AssignSchema = new Schema(
       furnished_status: String,
       interested_project: String,
       lead_status: String,
+      upload_by: String,
+      upload_type: String,
       preferred_configuration: String,
       preferred_floor: String,
       property_status: String,

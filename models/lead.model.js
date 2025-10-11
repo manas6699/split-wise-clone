@@ -15,7 +15,14 @@ phone: {
     // unique: true,
     required: [true, 'Phone number is required'],
 },
-
+upload_by:{
+    type: String,
+    required: true,
+},
+upload_type:{
+    type: String,
+    required : true
+},
 source:{
     type: String,
 },

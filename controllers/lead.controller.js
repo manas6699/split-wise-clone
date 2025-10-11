@@ -10,10 +10,10 @@ const Schedule = require('../models/schedule.model');
 
 
 exports.createLead = async (req, res) => {
-  const { name, email, phone, source , projectSource } = req.body;
+  const { name, email, phone, source , projectSource, upload_by , upload_type } = req.body;
 
   // Step 1: Validate required fields
-  if (!name || !email || !phone || !source) {
+  if (!name || !email || !phone || !source || !upload_by || !upload_type) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
@@ -32,6 +32,8 @@ exports.createLead = async (req, res) => {
       email,
       phone,
       source,
+      upload_type,
+      upload_by,
       status: 'not-assigned',
       projectSource
     });

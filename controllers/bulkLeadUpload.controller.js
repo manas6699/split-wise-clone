@@ -11,6 +11,10 @@ exports.bulkUploadLeads = async (req, res) => {
       return res.status(400).json({ success: false, message: "CSV file is required" });
     }
 
+    if(!req.body.upload_by){
+      return res.status(403).json({success: false , message: "Your token has been expired!"})
+    }
+
     // Read CSV file
     const file = fs.readFileSync(req.file.path, "utf8");
 
@@ -37,7 +41,9 @@ exports.bulkUploadLeads = async (req, res) => {
       projectSource: row["LEAD SOURCE"] || "",
       schedule_date: null,
       schedule_time: "",
-      status: "not-assigned"
+      status: "not-assigned",
+      upload_by: req.body.upload_by,
+      upload_type: "Bulk"
     }));
 
     // Insert into MongoDB
@@ -63,12 +69,19 @@ exports.bulkUploadLeads = async (req, res) => {
 
 exports.bulkUploadAndAssignLeads = async (req, res) => {
   try {
-    const { assignee_id, assignee_name , history } = req.body; // assignee info
+    const { assignee_id, assignee_name , history ,upload_by } = req.body; // assignee info
     if (!assignee_id || !assignee_name) {
       return res.status(400).json({
         success: false,
         message: "assignee_id and assignee_name are required",
       });
+    }
+
+    if(!upload_by){
+      return res.status(403).json({
+        success: false,
+        message: "Your token is missing or expired!"
+      })
     }
 
     if (!req.file) {
@@ -107,6 +120,8 @@ exports.bulkUploadAndAssignLeads = async (req, res) => {
           schedule_date: null,
           schedule_time: "",
           status: "not-assigned",
+          upload_by:upload_by,
+          upload_type: "Bulk"
         });
         await lead.save();
 
@@ -125,6 +140,8 @@ exports.bulkUploadAndAssignLeads = async (req, res) => {
             phone: lead.phone || "",
             source: lead.source || "",
             projectSource: lead.projectSource || "",
+            upload_by: lead.upload_by,
+            upload_type: "Bulk",
             status: "assigned", // updated
             lead_type: "",
             createdAt: lead.createdAt,
