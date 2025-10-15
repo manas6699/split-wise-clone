@@ -1,6 +1,9 @@
 const express = require('express');
 const Assign = require('../models/assign.model');
 const Lead = require('../models/lead.model');
+const {
+  getReassignedByUserWithDetails,
+} = require("../controllers/reassignHistory.controller");
 
 const router = express.Router();
 
@@ -59,5 +62,7 @@ router.post('/reassign', async (req, res) => {
     });
   }
 });
+
+router.get("/all-sandwiched-history", getReassignedByUserWithDetails);
 
 module.exports = router;
