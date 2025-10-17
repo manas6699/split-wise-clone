@@ -199,6 +199,7 @@ exports.getAllAssignments = async (req, res) => {
           "location" , 
           "preferred_floor", 
           "status",
+          "upload_type",
           "preferred_configuration",
           "property_status"
         ].includes(key)) {
