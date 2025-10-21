@@ -167,49 +167,72 @@ exports.bulkAssign = async (req, res) => {
 exports.getAllAssignments = async (req, res) => { 
   try {
     const queryObj = {};
-    const { startDate, endDate, status, ...filters } = req.query;
+    const { startDate, endDate, updatedStartDate, updatedEndDate, status, ...filters } = req.query;
 
-    // ✅ Date range filter (based on createdAt of assignment)
+    /* -------------------------------------------------------------------------- */
+    /* ✅ Filter by createdAt date range */
+    /* -------------------------------------------------------------------------- */
     if (startDate || endDate) {
-          queryObj.createdAt = {};
-          if (startDate) queryObj.createdAt.$gte = new Date(startDate);
-
-          if (endDate) {
-            let end = new Date(endDate);
-            end.setHours(23, 59, 59, 999); // ✅ include full day
-            queryObj.createdAt.$lte = end;
-          }
+      queryObj.createdAt = {};
+      if (startDate) queryObj.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        queryObj.createdAt.$lte = end;
+      }
     }
 
+    /* -------------------------------------------------------------------------- */
+    /* ✅ Filter by updatedAt date range */
+    /* -------------------------------------------------------------------------- */
+    if (updatedStartDate || updatedEndDate) {
+      queryObj.updatedAt = {};
+      if (updatedStartDate) queryObj.updatedAt.$gte = new Date(updatedStartDate);
+      if (updatedEndDate) {
+        const end = new Date(updatedEndDate);
+        end.setHours(23, 59, 59, 999);
+        queryObj.updatedAt.$lte = end;
+      }
+    }
 
-     // ✅ Top-level status filter (assignment.status)
+    /* -------------------------------------------------------------------------- */
+    /* ✅ Status filter (top-level) */
+    /* -------------------------------------------------------------------------- */
     if (status) {
       queryObj.status = status;
     }
-    // ✅ Dynamic filters (support nested fields in lead_details)
+
+    /* -------------------------------------------------------------------------- */
+    /* ✅ Dynamic nested filters */
+    /* -------------------------------------------------------------------------- */
     for (const key in filters) {
       if (filters[key]) {
-        if ([
-          "phone", 
-          "email", 
-          "name", 
-          "source", 
-          "lead_status", 
-          "lead_type",
-          "location" , 
-          "preferred_floor", 
-          "status",
-          "upload_type",
-          "preferred_configuration",
-          "property_status"
-        ].includes(key)) {
-          queryObj[`lead_details.${key}`] = filters[key]; // nested field
+        if (
+          [
+            "phone", 
+            "email", 
+            "name", 
+            "source", 
+            "lead_status", 
+            "lead_type",
+            "location", 
+            "preferred_floor", 
+            "status",
+            "upload_type",
+            "preferred_configuration",
+            "property_status"
+          ].includes(key)
+        ) {
+          queryObj[`lead_details.${key}`] = filters[key];
         } else {
-          queryObj[key] = filters[key]; // top-level field
+          queryObj[key] = filters[key];
         }
       }
     }
 
+    /* -------------------------------------------------------------------------- */
+    /* ✅ Query MongoDB */
+    /* -------------------------------------------------------------------------- */
     const assigns = await Assign.find(queryObj);
 
     return res.status(200).json({
@@ -226,6 +249,7 @@ exports.getAllAssignments = async (req, res) => {
     });
   }
 };
+
 
 
 /**
