@@ -64,6 +64,8 @@ lead_status:{
         'Redirection to voice-mail',
         'Site Visit Fixed',
         'Sold',
+        'Switch Off',
+        'Refer',
         'Site Visit Done',
         'Site Visit Cancelled',
         'Site Visit Rescheduled',
