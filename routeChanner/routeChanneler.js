@@ -32,6 +32,9 @@ const sourceNames = require('../routes/sourceName.routes')
 
 const bulkLeadUpload = require('../routes/bulkLeadUpload.routes')
 
+const automateMetaWebhookRoutes = require('../routes/metaIntegration.routes');
+
+router.use('/automate', automateMetaWebhookRoutes);
 
 router.use('/auth', authRoutes);
 
