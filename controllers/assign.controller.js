@@ -66,8 +66,7 @@ exports.createAssignment = async (req, res) => {
       message: `A new lead has been assigned to you: ${lead.name || 'Lead'}`,
       leadId: lead._id.toString(),
     });
-    // "={{ $json['phone_number'].replace('p:', '') }}"
-
+ 
     return res.status(201).json({
       success: true,
       message: 'Assigned successfully & lead status updated',
