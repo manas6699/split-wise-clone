@@ -13,7 +13,8 @@ const leadLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-router.post('/leads', leadLimiter, leadController.createLead);
+// removed rate-limiting middleware from here
+router.post('/leads', leadController.createLead);
 router.get('/getallleads', leadController.getAllLeads);
 router.get('/getlead/:assigneeId', leadController.getLeadbyId);
 // this handles fix card data
