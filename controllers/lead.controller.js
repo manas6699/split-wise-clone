@@ -116,6 +116,49 @@ exports.createLead = async (req, res) => {
   }
 };
 
+exports.createLead2 = async (req, res) => {
+  const { name, email, phone, source , projectSource, upload_by , upload_type } = req.body;
+
+  // Step 1: Validate required fields
+  if (!name || !email || !phone || !source || !upload_by || !upload_type) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  if (!checkPhoneNumber.isValidRealisticPhoneNumber(phone)) {
+    return res.status(400).json({ message: 'Please use a valid phone number' });
+  }
+
+  if (!email.includes('@')) {
+    return res.status(400).json({ message: 'Invalid email address' });
+  }
+
+  try {
+    // Step 2: Create new lead with default status
+    const newLead = new Leads({
+      name,
+      email,
+      phone,
+      source,
+      upload_type,
+      upload_by,
+      status: 'not-assigned',
+      projectSource
+    });
+
+    // Step 8: Save lead in DB
+    await newLead.save();
+
+    res.status(201).json({
+      message: 'Lead created successfully',
+      lead: newLead,
+    });
+
+  } catch (error) {
+    console.error('Error creating lead:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 
 exports.getAllLeads = async (req, res) => {
   try {

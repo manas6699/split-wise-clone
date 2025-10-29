@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const fetch = require("node-fetch"); // or axios if you prefer
+const fetch = require("node-fetch");
 const router = express.Router();
 
 // ✅ 1. Flexible Schema (stores any structure)
@@ -26,10 +26,12 @@ router.post("/metawebhook", async (req, res) => {
 
     // ✅ Forward same data to n8n Webhook
     try {
+      const cleanData = JSON.parse(JSON.stringify(req.body)); // ensure pure JSON
+
       const n8nResponse = await fetch("https://n8n.mmrrealty.co.in/webhook/meta", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(req.body),
+        body: JSON.stringify(cleanData),
       });
 
       if (!n8nResponse.ok) {
@@ -41,8 +43,9 @@ router.post("/metawebhook", async (req, res) => {
       console.error("❌ Error forwarding to n8n:", n8nError);
     }
 
-    // ✅ Respond to Google Sheets or source service
+    // ✅ Respond to the source service
     res.status(200).json({ success: true, message: "Data stored and sent to n8n" });
+
   } catch (error) {
     console.error("❌ Error saving data:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
