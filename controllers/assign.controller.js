@@ -213,6 +213,7 @@ exports.getAllAssignments = async (req, res) => {
             "email", 
             "name", 
             "source", 
+            "projectSource",
             "lead_status", 
             "lead_type",
             "location", 
