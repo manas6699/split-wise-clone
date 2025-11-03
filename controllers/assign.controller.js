@@ -167,7 +167,7 @@ exports.bulkAssign = async (req, res) => {
 exports.getAllAssignments = async (req, res) => { 
   try {
     const queryObj = {};
-    const { startDate, endDate, updatedStartDate, updatedEndDate, status, ...filters } = req.query;
+    const { startDate, endDate, updatedStartDate, updatedEndDate, status, assignee_name, assignee_id, ...filters } = req.query;
 
     /* -------------------------------------------------------------------------- */
     /* ✅ Filter by createdAt date range */
@@ -200,6 +200,15 @@ exports.getAllAssignments = async (req, res) => {
     /* -------------------------------------------------------------------------- */
     if (status) {
       queryObj.status = status;
+    }
+
+    // assignee_name filter
+    if(assignee_name){
+      queryObj.assignee_name = assignee_name;
+    }
+    // assignee_id filter
+    if(assignee_id){
+      queryObj.assignee_id = assignee_id;
     }
 
     /* -------------------------------------------------------------------------- */
