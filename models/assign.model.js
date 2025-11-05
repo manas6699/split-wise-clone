@@ -20,6 +20,9 @@ const AssignSchema = new Schema(
     assign_mode:{
       type : String,
     },
+    dumb_id:{
+      type: String,
+    },
     status: {
       type: String,
       enum: ['assigned', 'reassigned' , 'not-assigned' , 'auto-assigned'],

@@ -1,13 +1,13 @@
-// controllers/assign.controller.js
 
-const Assign = require('../models/assign.model');
 const Lead = require('../models/lead.model');
-const User = require('../models/user.model');
-
-
+const Assign = require('../models/assign.model');
+const UUIDDD = require('../utils/UUIDDD')
+  
+const idd = UUIDDD()
 /**
  * 📌 Create an assignment + update lead status
  */
+
 exports.createAssignment = async (req, res) => {
   const { lead_id, assignee_id, assignee_name, asssigned_by , status, remarks, history } = req.body;
 
@@ -19,6 +19,7 @@ exports.createAssignment = async (req, res) => {
   }
 
   try {
+    
     // ✅ Update lead status to "assigned"
     const lead = await Lead.findByIdAndUpdate(
       lead_id,
@@ -41,6 +42,7 @@ exports.createAssignment = async (req, res) => {
       status: status || 'assigned',
       assign_mode: 'Atomic',
       asssigned_by,
+      dumb_id: idd,
       remarks: remarks || '',
       history: history || [],
       lead_details: {
@@ -103,6 +105,7 @@ exports.bulkAssign = async (req, res) => {
   try {
     // ✅ Fetch all leads
     const leads = await Lead.find({ _id: { $in: lead_ids } });
+   
 
     if (leads.length === 0) {
       return res.status(404).json({
@@ -126,6 +129,7 @@ exports.bulkAssign = async (req, res) => {
       asssigned_by: asssigned_by,
       status: status || 'assigned',
       remarks: remarks || '',
+      dumb_id: UUIDDD(),
       history: history || [],
       lead_details: {
         name: lead.name,
@@ -277,7 +281,7 @@ exports.getAssignmentsByAssignee = async (req, res) => {
 
   try {
     const queryObj = { assignee_id };
-    const { startDate, endDate, ...filters } = req.query;
+    const { startDate, endDate, dumb_id, ...filters } = req.query;
 
     // ✅ Date range filter (based on assignment.createdAt)
     if (startDate || endDate) {
@@ -289,6 +293,10 @@ exports.getAssignmentsByAssignee = async (req, res) => {
         end.setHours(23, 59, 59, 999); // include full day
         queryObj.createdAt.$lte = end;
       }
+    }
+
+    if(dumb_id){
+      queryObj.dumb_id = dumb_id
     }
 
     // ✅ Dynamic filters (nested in lead_details OR top-level)

@@ -12,7 +12,7 @@ email: {
 },
 phone: {
     type: String,
-    // unique: true,
+    unique: true,
     required: [true, 'Phone number is required'],
 },
 upload_by:{
