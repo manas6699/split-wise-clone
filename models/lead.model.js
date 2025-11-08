@@ -59,6 +59,7 @@ lead_status:{
         'Busy',
         'Not responding',
         'Network Error',
+        'Prospect',
         'Not Valid',
         'Under Follow Up',
         'Redirection to voice-mail',
