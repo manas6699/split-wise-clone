@@ -2,8 +2,7 @@
 const Lead = require('../models/lead.model');
 const Assign = require('../models/assign.model');
 const UUIDDD = require('../utils/UUIDDD')
-  
-const idd = UUIDDD()
+
 /**
  * 📌 Create an assignment + update lead status
  */
@@ -42,7 +41,7 @@ exports.createAssignment = async (req, res) => {
       status: status || 'assigned',
       assign_mode: 'Atomic',
       asssigned_by,
-      dumb_id: idd,
+      dumb_id: UUIDDD(),
       remarks: remarks || '',
       history: history || [],
       lead_details: {
