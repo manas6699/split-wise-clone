@@ -34,6 +34,8 @@ const bulkLeadUpload = require('../routes/bulkLeadUpload.routes')
 
 const automateMetaWebhookRoutes = require('../routes/metaIntegration.routes');
 
+const commentRoutes = require('../routes/comment.routes');
+
 router.use('/automate', automateMetaWebhookRoutes);
 
 router.use('/auth', authRoutes);
@@ -69,6 +71,7 @@ router.use('/locations' , locationNames);
 
 router.use('/sources' , sourceNames);
 router.use('/upload' , bulkLeadUpload);
+router.use('/comment' , commentRoutes)
 
 
 module.exports = router;
