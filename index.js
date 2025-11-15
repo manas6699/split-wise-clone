@@ -36,7 +36,7 @@ const io = socketIo(server, {
             'http://real-estate-git-main-manas6699s-projects.vercel.app',
             'https://real-estate-p5xlj9nkx-manas6699s-projects.vercel.app',
         ],
-        methods: ['GET', 'POST'],
+        methods: ['GET', 'POST' , 'PATCH'],
     },
 });
 
@@ -57,13 +57,20 @@ app.set('io', io);
 
 io.on('connection', (socket) => {
     console.log('✅ Socket connected:', socket.id);
-    socket.on('join-room', (userId) => {
-        console.log(`🔗 Socket ${socket.id} joining room: ${userId}`);
-        socket.join(userId);
-    });
+    // The server already knows the user's ID from the auth middleware
+    const authenticatedUserId = socket.userId; 
+
+    if (authenticatedUserId) {
+        console.log(`🔗 Socket ${socket.id} (User: ${authenticatedUserId}) auto-joining room.`);
+        // Automatically join the user to their own private room
+        socket.join(authenticatedUserId);
+    } else {
+        console.error(`❌ Socket ${socket.id} connected but has no authenticated userId.`);
+    }
     socket.on("connect_error", (err) => {
         console.error("❌ Socket connection error:", err.message);
     });
+
     socket.on('disconnect', () => {
         console.log('❌ Socket disconnected:', socket.id);
     });

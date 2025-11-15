@@ -2,7 +2,7 @@ const Assign = require('../models/assign.model'); // Adjust path as needed
 
 exports.updateAssignHistory = async (req, res) => {
   try {
-    const { newHistoryEntry } = req.body;
+    const { newHistoryEntry , assignee_id } = req.body;
     const { id } = req.params;
 
     // 1. Validation
@@ -11,7 +11,11 @@ exports.updateAssignHistory = async (req, res) => {
         message: 'Request body must contain a "newHistoryEntry" string.' 
       });
     }
-
+if (!assignee_id) {
+  return res.status(400).json({
+    message: 'Request body must contain an "assignee_id".'
+  });
+}
     // 2. Find the document and update it using the $push operator
     // $push appends the new string to the 'history' array
     const updatedDocument = await Assign.findByIdAndUpdate(
@@ -30,6 +34,11 @@ exports.updateAssignHistory = async (req, res) => {
       return res.status(404).json({ message: 'Document not found with this ID.' });
     }
 
+      const io = req.app.get('io');
+      io.to(assignee_id).emit('comment', {
+      title: 'New Comment Added by',
+      message: `${newHistoryEntry || 'Message'}`
+    });
     // 4. Send success response
     res.status(200).json({
       message: 'History updated successfully.',
