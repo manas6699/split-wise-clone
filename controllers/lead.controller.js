@@ -4,7 +4,7 @@ const RoundRobinState = require('../models/roundrobin.model');
 const Assign = require('../models/assign.model');
 const mongoose = require("mongoose");
 const User = require('../models/user.model');
-const checkPhoneNumber = require('../utils/checkPhoneNumber');
+// const checkPhoneNumber = require('../utils/checkPhoneNumber');
 
 const Schedule = require('../models/schedule.model');
 
@@ -17,9 +17,7 @@ exports.createLead = async (req, res) => {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  if (!checkPhoneNumber.isValidRealisticPhoneNumber(phone)) {
-    return res.status(400).json({ message: 'Please use a valid phone number' });
-  }
+
 
   if (!email.includes('@')) {
     return res.status(400).json({ message: 'Invalid email address' });
@@ -124,9 +122,7 @@ exports.createLead2 = async (req, res) => {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  if (!checkPhoneNumber.isValidRealisticPhoneNumber(phone)) {
-    return res.status(400).json({ message: 'Please use a valid phone number' });
-  }
+
 
   if (!email.includes('@')) {
     return res.status(400).json({ message: 'Invalid email address' });
