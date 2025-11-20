@@ -21,6 +21,7 @@
     "express-rate-limit": "^7.5.0",
     "firebase-admin": "^13.4.0",
     "fs": "^0.0.1-security",
+    "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.3",
     "multer": "^2.0.1",
