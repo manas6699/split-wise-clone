@@ -36,6 +36,8 @@ const automateMetaWebhookRoutes = require('../routes/metaIntegration.routes');
 
 const commentRoutes = require('../routes/comment.routes');
 
+const inventoryRoutes = require('../routes/inventory.routes')
+
 router.use('/automate', automateMetaWebhookRoutes);
 
 router.use('/auth', authRoutes);
@@ -71,7 +73,8 @@ router.use('/locations' , locationNames);
 
 router.use('/sources' , sourceNames);
 router.use('/upload' , bulkLeadUpload);
-router.use('/comment' , commentRoutes)
+router.use('/comment' , commentRoutes);
+router.use('/inventory' , inventoryRoutes);
 
 
 module.exports = router;
