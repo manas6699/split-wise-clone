@@ -168,6 +168,7 @@ exports.getAllLeads = async (req, res) => {
       source,
       projectSource,
       lead_status,
+      subdisposition,
       startDate,
       endDate,
     } = req.query;
@@ -188,6 +189,7 @@ exports.getAllLeads = async (req, res) => {
     if (projectSource) query.projectSource = projectSource;
     if (source) query.source = source;
     if (lead_status) query.lead_status = lead_status;
+    if (subdisposition) query.subdisposition = subdisposition;
 
     // 🗓️ Date range filter
     if (startDate || endDate) {
@@ -285,6 +287,7 @@ exports.updateLeadDetails = async (req, res) => {
     "furnished_status",
     "property_status",
     "lead_status",
+    "subdisposition",
     "lead_type",
     "comments",
     "status",
@@ -301,6 +304,9 @@ exports.updateLeadDetails = async (req, res) => {
         updates[field] = req.body[field];
       }
     });
+    if (req.body.subdisposition !== undefined) {
+      updates.subdisposition = req.body.subdisposition || undefined;
+    }
 
     // 2️⃣ Update Lead
     const updatedLead = await Leads.findByIdAndUpdate(
@@ -338,6 +344,7 @@ exports.updateLeadDetails = async (req, res) => {
           "lead_details.furnished_status": updatedLead.furnished_status || "",
           "lead_details.property_status": updatedLead.property_status || "",
           "lead_details.lead_status": updatedLead.lead_status || "",
+          "lead_details.subdisposition": updatedLead.subdisposition || "",
           "lead_details.status": "processed",
           status: "processed",
           "lead_details.lead_type": updatedLead.lead_type || "",
@@ -353,6 +360,7 @@ exports.updateLeadDetails = async (req, res) => {
             assignee_name,
             updatedAt: new Date(),
             status: updatedLead.lead_status || "",
+            subdisposition: updatedLead.subdisposition || "",
             remarks: updatedLead.comments || "",
           },
         },

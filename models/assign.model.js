@@ -57,6 +57,7 @@ const AssignSchema = new Schema(
       property_status: String,
       schedule_date: String,
       schedule_time: String,
+      subdisposition: String,
       createdAt: Date,
       updatedAt: Date,
     },
