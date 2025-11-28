@@ -263,7 +263,7 @@ if (startDate || endDate) {
 
 // assign old leads to telecallers
 exports.createOldAssigntoNew = async (req, res) => {
-  const { lead_id, assignee_id, assignee_name, remarks } = req.body;
+  const { lead_id, assignee_id, assignee_name, remarks , upload_by } = req.body;
 
   if (!lead_id || !assignee_id || !assignee_name) {
     return res.status(400).json({
@@ -297,6 +297,8 @@ exports.createOldAssigntoNew = async (req, res) => {
       schedule_date: null,
       schedule_time: "",
       status: "assigned",
+       upload_type: "old",
+       upload_by: upload_by,
     });
 
     await newLead.save();
