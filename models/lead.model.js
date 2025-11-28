@@ -26,6 +26,7 @@ const DISPOSITIONS = [
   'Duplicate',
   'Language barrier',
   'Not interested',
+  "None"
 ];
 
 const leadSchema = new mongoose.Schema(
