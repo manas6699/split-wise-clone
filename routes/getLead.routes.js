@@ -21,6 +21,7 @@ router.get('/getlead/:assigneeId', leadController.getLeadbyId);
 // this handles fix card data
 router.get('/getleadDetails/:id', leadController.getLeadDetailsbyId);
 router.put('/leads/:id', leadController.updateLeadDetails);
+router.put('/leads/updateBasic/:id', leadController.updateLeadBasicInfo);
 
 // route to get multiple leads
 router.post('/get/multipleLeadDetails' , leadController.getBulkLeads);

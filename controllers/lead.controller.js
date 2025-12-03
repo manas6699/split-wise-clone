@@ -417,6 +417,70 @@ exports.updateLeadDetails = async (req, res) => {
   }
 };
 
+exports.updateLeadBasicInfo = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, updated_by } = req.body;
+
+  // 1. Validation
+  if (!name && !email) {
+    return res.status(400).json({ message: 'Please provide at least a name or email to update.' });
+  }
+
+  if (email && !email.includes('@')) {
+    return res.status(400).json({ message: 'Invalid email address' });
+  }
+
+  try {
+    // 2. Prepare update object dynamically
+    const updates = {};
+    if (name) updates.name = name;
+    if (email) updates.email = email;
+
+    // 3. Update the main Lead document
+    const updatedLead = await Leads.findByIdAndUpdate(
+      id,
+      { $set: updates },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedLead) {
+      return res.status(404).json({ message: 'Lead not found' });
+    }
+
+    // 4. SYNC: Update associated Assign records & Add History
+    // This ensures telecallers see the updated name/email in their logs/history
+    const assignUpdates = {};
+    if (name) assignUpdates['lead_details.name'] = name;
+    if (email) assignUpdates['lead_details.email'] = email;
+
+    // Prepare history entry using the updated_by name from req.body
+    const historyEntry = {
+      lead_id: id,
+      assignee_name: updated_by || 'System', // Captures who updated the fields
+      updatedAt: new Date(),
+      status: updatedLead.status || 'processed',
+      remarks: `Lead details (Name/Email) updated by ${updated_by}`,
+    };
+
+    // Update Assign records: set new details and push to history
+    await Assign.updateMany(
+      { lead_id: id },
+      { 
+        $set: assignUpdates,
+        $push: { history: historyEntry }
+      }
+    );
+
+    res.status(200).json({
+      message: 'Lead basic info updated successfully',
+      lead: updatedLead,
+    });
+
+  } catch (error) {
+    console.error('Error updating lead basic info:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
 
 exports.getBulkLeads = async (req, res) => {
     try {
