@@ -33,6 +33,7 @@ const io = socketIo(server, {
             'http://localhost:3000',
             'https://www.mmrrealty.co.in',
             'https://mmrrealty.co.in',
+            "http://162.241.115.194:3000",
             'http://real-estate-git-main-manas6699s-projects.vercel.app',
             'https://real-estate-4b8t7xrr6-manas6699s-projects.vercel.app/',
         ],
@@ -81,6 +82,7 @@ const allowedOrigins = [
     'http://localhost:3000',
     'https://www.mmrrealty.co.in',
     "https://mmrrealty.co.in", 
+    "http://162.241.115.194:3000",
     'http://real-estate-git-main-manas6699s-projects.vercel.app',
     'https://real-estate-4b8t7xrr6-manas6699s-projects.vercel.app/',
 ];
