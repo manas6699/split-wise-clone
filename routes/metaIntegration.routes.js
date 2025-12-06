@@ -72,7 +72,7 @@ router.post("/metawebhook", async (req, res) => {
     }
 
     // ✅ Respond to source service
-    res.status(200).json({ success: true, message: "Data stored and sent to n8n" });
+    res.status(200).json({ success: true, message: "Data stored and sent to n8n" ,entry_id: req.body.entry_id });
 
   } catch (error) {
     console.error("❌ Error saving data:", error);
