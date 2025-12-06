@@ -1,34 +1,5 @@
 const mongoose = require('mongoose');
 
-const DISPOSITIONS = [
-  'Busy',
-  'Not responding',
-  'Network Error',
-  'Prospect',
-  'Not Valid',
-  'Under Follow Up',
-  'Redirection to voice-mail',
-  'Site Visit Fixed',
-  'Sold',
-  'Switch Off',
-  'Refer',
-  'Site Visit Done',
-  'Site Visit Cancelled',
-  'Site Visit Rescheduled',
-  'Already Booked',
-  'Booked',
-  'Call Back',
-  'Fraud',
-  'Agent Switch',
-  'Visited Followup',
-  'Location Issue',
-  'Budget Issue',
-  'Duplicate',
-  'Language barrier',
-  'Not interested',
-  "None"
-];
-
 const leadSchema = new mongoose.Schema(
   {
     name: {
@@ -83,12 +54,9 @@ const leadSchema = new mongoose.Schema(
     },
     lead_status: {
       type: String,
-      enum: DISPOSITIONS,
     },
     subdisposition: {
       type: String,
-      enum: DISPOSITIONS,
-      set: (value) => (value === '' ? undefined : value),
     },
     lead_type: {
       type: String,
