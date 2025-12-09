@@ -30,14 +30,13 @@ app.use('/webhook', webhookRoutes);
 const io = socketIo(server, {
     cors: {
         origin: [
-            'http://localhost:3000',
-            'https://www.mmrrealty.co.in',
-            'https://mmrrealty.co.in',
-            "http://162.241.115.194:3000",
-            'http://real-estate-git-main-manas6699s-projects.vercel.app',
-            'https://real-estate-git-main-manas6699s-projects.vercel.app',
-            'https://real-estate-git-main-manas6699s-projects.vercel.app/login',
-            'https://real-estate-4b8t7xrr6-manas6699s-projects.vercel.app/',
+           'http://localhost:3000',
+    'https://www.mmrrealty.co.in',
+    "https://mmrrealty.co.in", 
+    "http://162.241.115.194:3000",
+    // 👇 FIXED: No trailing slash, no '/login' path
+    'https://real-estate-git-main-manas6699s-projects.vercel.app',
+    'https://real-estate-4b8t7xrr6-manas6699s-projects.vercel.app',
         ],
         methods: ['GET', 'POST' , 'PATCH'],
     },
@@ -85,10 +84,9 @@ const allowedOrigins = [
     'https://www.mmrrealty.co.in',
     "https://mmrrealty.co.in", 
     "http://162.241.115.194:3000",
-    'http://real-estate-git-main-manas6699s-projects.vercel.app',
+    // 👇 FIXED: No trailing slash, no '/login' path
     'https://real-estate-git-main-manas6699s-projects.vercel.app',
-    'https://real-estate-git-main-manas6699s-projects.vercel.app/login',
-    'https://real-estate-4b8t7xrr6-manas6699s-projects.vercel.app/',
+    'https://real-estate-4b8t7xrr6-manas6699s-projects.vercel.app',
 ];
 
 // ✅ Configure CORS
