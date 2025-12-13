@@ -3,14 +3,21 @@ const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const router = express.Router();
 
-// ✅ 1. Flexible Schema (stores any structure)
+// Flexible Schema
 const dynamicSchema = new mongoose.Schema({}, { strict: false, timestamps: true });
 const SheetData = mongoose.model("SheetData", dynamicSchema);
+// const BASE_API_URL = 'https://mmrrealty.co.in';
+const BASE_API_URL = 'https://split-wise-clone-085p.onrender.com';
 
-// ✅ 2. Google Sheets Webhook Receiver
+// Helper: Clean and normalize phone number → last 10 digits
+function extractValidPhone(numberString = "") {
+  const digits = numberString.replace(/\D/g, "");
+  return digits.slice(-10);
+}
+
 router.post("/metawebhook", async (req, res) => {
   try {
-    console.log("📥 Incoming data:", req.body);
+    console.log("📥 Incoming Data:", req.body);
 
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({
@@ -19,7 +26,18 @@ router.post("/metawebhook", async (req, res) => {
       });
     }
 
-    // ✅ Capture Source Info
+    // Extract incoming values
+    const {
+      name = "",
+      phone_number = "",
+      email = "",
+      project_name = "",
+      entry_id = "",
+    } = req.body;
+
+    const cleanedPhone = extractValidPhone(phone_number);
+
+    // Capture metadata
     const sourceInfo = {
       "x-source-domain": req.headers["x-source-domain"] || "not provided",
       "x-forwarded-by": req.headers["x-forwarded-by"] || "not provided",
@@ -27,56 +45,60 @@ router.post("/metawebhook", async (req, res) => {
       "origin": req.headers["origin"] || "not provided",
       "user-agent": req.headers["user-agent"] || "unknown",
       "ip":
-        req.headers["x-forwarded-for"]?.split(",")[0] || // if behind a proxy
+        req.headers["x-forwarded-for"]?.split(",")[0] ||
         req.connection?.remoteAddress ||
         req.socket?.remoteAddress ||
         req.ip ||
         "unknown",
     };
 
-    console.log("🌐 Source Info:", sourceInfo);
-
-    // ✅ Store payload + metadata in MongoDB
-    const newEntry = new SheetData({
+    // Store in MongoDB
+    await new SheetData({
       ...req.body,
       _sourceMeta: sourceInfo,
-    });
-    await newEntry.save();
-    console.log("✅ Data + source info stored successfully in MongoDB");
+      cleanedPhone,
+    }).save();
 
-    // ✅ Forward same data (with source info) to n8n Webhook
+    console.log("✅ MongoDB Save Success");
+
+    // ------------- CALL YOUR LEADS API -------------
     try {
-      const cleanData = JSON.parse(JSON.stringify(req.body));
+      const leadPayload = {
+        name: name,
+        email: email,
+        phone: cleanedPhone,
+        source: project_name,
+        projectSource: "Meta-mmr",
+        upload_by: "system",
+        upload_type: "webhook",
+      };
 
-      const n8nResponse = await fetch("https://n8n.mmrrealty.co.in/webhook/meta", {
+      console.log("📤 Sending to Leads API:", leadPayload);
+
+      await fetch(`${BASE_API_URL}/api/mmr/leads`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Source-Domain": sourceInfo["x-source-domain"],
-          "X-Forwarded-By": sourceInfo["x-forwarded-by"],
-          "X-Client-IP": sourceInfo["ip"],
-        },
-        body: JSON.stringify({
-          data: cleanData,
-          source: sourceInfo, // optional - helps debug inside n8n
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(leadPayload),
       });
 
-      if (!n8nResponse.ok) {
-        console.error("⚠️ Failed to forward data to n8n:", n8nResponse.statusText);
-      } else {
-        console.log("📤 Data successfully forwarded to n8n");
-      }
-    } catch (n8nError) {
-      console.error("❌ Error forwarding to n8n:", n8nError);
+      console.log("✅ Lead successfully pushed to MMR API");
+    } catch (apiError) {
+      console.error("❌ Failed to send lead to API:", apiError);
     }
 
-    // ✅ Respond to source service
-    res.status(200).json({ success: true, message: "Data stored and sent to n8n" ,entry_id: req.body.entry_id });
+    // Response back
+    return res.status(200).json({
+      success: true,
+      message: "Lead processed successfully",
+      entry_id,
+    });
 
   } catch (error) {
-    console.error("❌ Error saving data:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    console.error("❌ Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 });
 
