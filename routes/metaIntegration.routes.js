@@ -33,6 +33,7 @@ router.post("/metawebhook", async (req, res) => {
       email = "",
       project_name = "",
       entry_id = "",
+      source = "",
     } = req.body;
 
     const cleanedPhone = extractValidPhone(phone_number);
@@ -68,7 +69,7 @@ router.post("/metawebhook", async (req, res) => {
         email: email,
         phone: cleanedPhone,
         source: project_name,
-        projectSource: "Meta-mmr",
+        projectSource: source,
         upload_by: "system",
         upload_type: "webhook",
       };
