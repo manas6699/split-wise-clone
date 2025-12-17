@@ -5,6 +5,7 @@ const Assign = require('../models/assign.model');
 const mongoose = require("mongoose");
 const User = require('../models/user.model');
 // const checkPhoneNumber = require('../utils/checkPhoneNumber');
+const UUIDDD = require('../utils/UUIDDD')
 
 const Schedule = require('../models/schedule.model');
 
@@ -13,14 +14,8 @@ exports.createLead = async (req, res) => {
   const { name, email, phone, source , projectSource, upload_by , upload_type } = req.body;
 
   // Step 1: Validate required fields
-  if (!name || !email || !phone || !source || !upload_by || !upload_type) {
+  if (!name || !phone || !source || !upload_by || !upload_type) {
     return res.status(400).json({ message: 'All fields are required' });
-  }
-
-
-
-  if (!email.includes('@')) {
-    return res.status(400).json({ message: 'Invalid email address' });
   }
 
   try {
@@ -72,6 +67,7 @@ exports.createLead = async (req, res) => {
         assignee_name: telecaller?.name || '',
         status: 'auto-assigned',
         remarks: 'auto-assigned',
+        dumb_id: UUIDDD(),
         history: [],
         lead_details: {
           name: newLead.name,
@@ -118,14 +114,8 @@ exports.createLead2 = async (req, res) => {
   const { name, email, phone, source , projectSource, upload_by , upload_type } = req.body;
 
   // Step 1: Validate required fields
-  if (!name || !email || !phone || !source || !upload_by || !upload_type) {
+  if (!name || !phone || !source || !upload_by || !upload_type) {
     return res.status(400).json({ message: 'All fields are required' });
-  }
-
-
-
-  if (!email.includes('@')) {
-    return res.status(400).json({ message: 'Invalid email address' });
   }
 
   try {
