@@ -6,8 +6,8 @@ const router = express.Router();
 // Flexible Schema
 const dynamicSchema = new mongoose.Schema({}, { strict: false, timestamps: true });
 const SheetData = mongoose.model("SheetData", dynamicSchema);
-// const BASE_API_URL = 'https://mmrrealty.co.in';
-const BASE_API_URL = 'https://split-wise-clone-085p.onrender.com';
+const BASE_API_URL = 'https://mmrrealty.co.in';
+// const BASE_API_URL = 'https://split-wise-clone-085p.onrender.com';
 
 // Helper: Clean and normalize phone number → last 10 digits
 function extractValidPhone(numberString = "") {
