@@ -264,6 +264,41 @@ exports.getLeadDetailsbyId = async (req, res) => {
   }
 };
 
+exports.getLeadDetailsbyIdfromAssigns = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // We search the Assignments collection instead of Leads
+    // findById automatically looks for the "_id" field
+    const assignment = await Assign.findOne({ lead_id: id });
+
+    if (!assignment) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Assignment record not found' 
+      });
+    }
+
+    res.status(200).json({ 
+      success: true,
+      message: 'Lead assignment details fetched successfully', 
+      data: assignment 
+    });
+
+  } catch (error) {
+    console.error('Error fetching assignment details:', error);
+    
+    // Check if the error is due to an invalid MongoDB ObjectId format
+    if (error.kind === 'ObjectId') {
+      return res.status(400).json({ message: 'Invalid ID format' });
+    }
+
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: error.message 
+    });
+  }
+};
 
 exports.updateLeadDetails = async (req, res) => {
   const { id } = req.params;
