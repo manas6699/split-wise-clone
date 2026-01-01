@@ -320,7 +320,8 @@ exports.getAssignmentsByAssignee = async (req, res) => {
             "preferred_floor",
             "preferred_configuration",
             "property_status",
-            "upload_type"
+            "upload_type",
+            "schedule_date"
           ].includes(key)
         ) {
           queryObj[`lead_details.${key}`] = filters[key]; // nested field
