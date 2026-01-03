@@ -285,7 +285,6 @@ exports.getAssignmentsByAssignee = async (req, res) => {
 
   try {
     const queryObj = { assignee_id };
-    // Destructure new updated date fields from query
     const { startDate, endDate, updatedStartDate, updatedEndDate, dumb_id, ...filters } = req.query;
 
     // ✅ Date range filter for createdAt
@@ -299,7 +298,7 @@ exports.getAssignmentsByAssignee = async (req, res) => {
       }
     }
 
-    // ✅ NEW: Date range filter for updatedAt
+    // ✅ Date range filter for updatedAt
     if (updatedStartDate || updatedEndDate) {
       queryObj.updatedAt = {};
       if (updatedStartDate) queryObj.updatedAt.$gte = new Date(updatedStartDate);
@@ -314,22 +313,38 @@ exports.getAssignmentsByAssignee = async (req, res) => {
       queryObj.dumb_id = dumb_id;
     }
 
-    // ✅ Dynamic filters
+    // ✅ Dynamic filters with Array ($in) support
     for (const key in filters) {
-      if (filters[key]) {
-        // Remove quotes if they were passed in the URL string like lead_status="Unqualified"
-        const cleanValue = typeof filters[key] === 'string' ? filters[key].replace(/"/g, '') : filters[key];
+      let value = filters[key];
 
-        if (
-          [
-            "phone", "email", "name", "source", "status", "lead_status",
-            "subdisposition", "lead_type", "location", "preferred_floor",
-            "preferred_configuration", "property_status", "upload_type", "schedule_date"
-          ].includes(key)
-        ) {
-          queryObj[`lead_details.${key}`] = cleanValue;
+      if (value) {
+        // 1. Handle Array Conversion: 
+        // If frontend sends ?lead_status=Follow Up&lead_status=Unqualified, Express makes it an array.
+        // If frontend sends a stringified array like '["Follow Up", "Unqualified"]', we parse it.
+        if (typeof value === 'string' && value.startsWith('[') && value.endsWith(']')) {
+          try {
+            value = JSON.parse(value);
+          } catch (e) {
+            value = value.replace(/"/g, ''); // Fallback to clean string
+          }
+        } else if (typeof value === 'string') {
+          value = value.replace(/"/g, ''); // Clean quotes from standard strings
+        }
+
+        // 2. Determine if we use direct match or $in operator
+        const queryValue = Array.isArray(value) ? { $in: value } : value;
+
+        // 3. Map to correct field path
+        const leadDetailFields = [
+          "phone", "email", "name", "source", "status", "lead_status",
+          "subdisposition", "lead_type", "location", "preferred_floor",
+          "preferred_configuration", "property_status", "upload_type", "schedule_date"
+        ];
+
+        if (leadDetailFields.includes(key)) {
+          queryObj[`lead_details.${key}`] = queryValue;
         } else {
-          queryObj[key] = cleanValue;
+          queryObj[key] = queryValue;
         }
       }
     }
@@ -350,8 +365,6 @@ exports.getAssignmentsByAssignee = async (req, res) => {
     });
   }
 };
-
-
 
 exports.getAssignmentHistoryById = async (req, res) => {
   const { id } = req.params;
