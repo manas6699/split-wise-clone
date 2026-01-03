@@ -285,53 +285,55 @@ exports.getAssignmentsByAssignee = async (req, res) => {
 
   try {
     const queryObj = { assignee_id };
-    const { startDate, endDate, dumb_id, ...filters } = req.query;
+    // Destructure new updated date fields from query
+    const { startDate, endDate, updatedStartDate, updatedEndDate, dumb_id, ...filters } = req.query;
 
-    // ✅ Date range filter (based on assignment.createdAt)
+    // ✅ Date range filter for createdAt
     if (startDate || endDate) {
       queryObj.createdAt = {};
       if (startDate) queryObj.createdAt.$gte = new Date(startDate);
-
       if (endDate) {
         let end = new Date(endDate);
-        end.setHours(23, 59, 59, 999); // include full day
+        end.setHours(23, 59, 59, 999);
         queryObj.createdAt.$lte = end;
       }
     }
 
-    if(dumb_id){
-      queryObj.dumb_id = dumb_id
+    // ✅ NEW: Date range filter for updatedAt
+    if (updatedStartDate || updatedEndDate) {
+      queryObj.updatedAt = {};
+      if (updatedStartDate) queryObj.updatedAt.$gte = new Date(updatedStartDate);
+      if (updatedEndDate) {
+        let end = new Date(updatedEndDate);
+        end.setHours(23, 59, 59, 999);
+        queryObj.updatedAt.$lte = end;
+      }
     }
 
-    // ✅ Dynamic filters (nested in lead_details OR top-level)
+    if (dumb_id) {
+      queryObj.dumb_id = dumb_id;
+    }
+
+    // ✅ Dynamic filters
     for (const key in filters) {
       if (filters[key]) {
+        // Remove quotes if they were passed in the URL string like lead_status="Unqualified"
+        const cleanValue = typeof filters[key] === 'string' ? filters[key].replace(/"/g, '') : filters[key];
+
         if (
           [
-            "phone",
-            "email",
-            "name",
-            "source",
-            "status",            
-            "lead_status",
-            "subdisposition",
-            "lead_type",
-            "location",
-            "preferred_floor",
-            "preferred_configuration",
-            "property_status",
-            "upload_type",
-            "schedule_date"
+            "phone", "email", "name", "source", "status", "lead_status",
+            "subdisposition", "lead_type", "location", "preferred_floor",
+            "preferred_configuration", "property_status", "upload_type", "schedule_date"
           ].includes(key)
         ) {
-          queryObj[`lead_details.${key}`] = filters[key]; // nested field
+          queryObj[`lead_details.${key}`] = cleanValue;
         } else {
-          queryObj[key] = filters[key]; // top-level field
+          queryObj[key] = cleanValue;
         }
       }
     }
 
-    // ✅ Apply filters in the query
     const assigns = await Assign.find(queryObj);
 
     return res.status(200).json({
