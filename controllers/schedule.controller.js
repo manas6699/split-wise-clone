@@ -15,7 +15,6 @@ exports.getAllSchedules = async (req, res) => {
     }
 }
 
-
 exports.getSchedulesByAssignee = async (req, res) => {
   try {
     const { assigneeId } = req.params; // e.g., /schedules/:assigneeId
@@ -133,7 +132,7 @@ exports.getFullAssignDataFromSchedule = async (req, res) => {
     // 3. Fetch UNTOUCHED LEADS (Status: assigned)
     const activeAssignsData = await Assign.find({
       assignee_id: new mongoose.Types.ObjectId(assigneeId),
-      status: "assigned"
+      status: { $in: ["assigned", "auto-assigned"] }
     }).sort({ updatedAt: -1 }); // Sorted by recent updates
 
     // 4. Fetch FULL Assign Docs for Scheduled Leads
