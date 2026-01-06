@@ -171,13 +171,48 @@ exports.bulkAssign = async (req, res) => {
 /**
  * 📌 Get ALL assignments
  */
-exports.getAllAssignments = async (req, res) => { 
+exports.getAllAssignments = async (req, res) => {
   try {
     const queryObj = {};
-    const { startDate, endDate, updatedStartDate, updatedEndDate, status, assignee_name, assignee_id, ...filters } = req.query;
+    const {
+      startDate,
+      endDate,
+      updatedStartDate,
+      updatedEndDate,
+      status,
+      assignee_name,
+      assignee_id,
+      ...filters
+    } = req.query;
 
     /* -------------------------------------------------------------------------- */
-    /* ✅ Filter by createdAt date range */
+    /* ✅ Helper Function for $in Support (Handles brackets, quotes, and commas)  */
+    /* -------------------------------------------------------------------------- */
+    const formatFilterValue = (val) => {
+      if (!val) return val;
+
+      // If it's already an array (Node.js does this for ?status=a&status=b)
+      if (Array.isArray(val)) {
+        return { $in: val };
+      }
+
+      if (typeof val === 'string') {
+        // Check if string contains comma or looks like an array string ['a','b']
+        if (val.includes(',') || val.startsWith('[') || val.endsWith(']')) {
+          const cleanValues = val
+            .replace(/[\[\]'"]/g, '') // Remove brackets [ ] and quotes ' "
+            .split(',')               // Split into array
+            .map(item => item.trim()) // Remove extra spaces
+            .filter(Boolean);         // Remove empty strings
+
+          return { $in: cleanValues };
+        }
+      }
+      return val;
+    };
+
+    /* -------------------------------------------------------------------------- */
+    /* ✅ Date Range Filters */
     /* -------------------------------------------------------------------------- */
     if (startDate || endDate) {
       queryObj.createdAt = {};
@@ -189,9 +224,6 @@ exports.getAllAssignments = async (req, res) => {
       }
     }
 
-    /* -------------------------------------------------------------------------- */
-    /* ✅ Filter by updatedAt date range */
-    /* -------------------------------------------------------------------------- */
     if (updatedStartDate || updatedEndDate) {
       queryObj.updatedAt = {};
       if (updatedStartDate) queryObj.updatedAt.$gte = new Date(updatedStartDate);
@@ -203,55 +235,41 @@ exports.getAllAssignments = async (req, res) => {
     }
 
     /* -------------------------------------------------------------------------- */
-    /* ✅ Status filter (top-level) */
+    /* ✅ Top-level Filters */
     /* -------------------------------------------------------------------------- */
-    if (status) {
-      queryObj.status = status;
-    }
-
-    // assignee_name filter
-    if(assignee_name){
-      queryObj.assignee_name = assignee_name;
-    }
-    // assignee_id filter
-    if(assignee_id){
-      queryObj.assignee_id = assignee_id;
-    }
+    if (status) queryObj.status = formatFilterValue(status);
+    if (assignee_name) queryObj.assignee_name = formatFilterValue(assignee_name);
+    if (assignee_id) queryObj.assignee_id = formatFilterValue(assignee_id);
 
     /* -------------------------------------------------------------------------- */
-    /* ✅ Dynamic nested filters */
+    /* ✅ Dynamic & Nested Filters */
     /* -------------------------------------------------------------------------- */
+    const nestedFields = [
+      "phone", "email", "name", "source", "projectSource",
+      "lead_status", "subdisposition", "lead_type", "location", 
+      "preferred_floor", "status", "upload_type", 
+      "preferred_configuration", "property_status"
+    ];
+
     for (const key in filters) {
       if (filters[key]) {
-        if (
-          [
-            "phone", 
-            "email", 
-            "name", 
-            "source", 
-            "projectSource",
-            "lead_status", 
-            "subdisposition",
-            "lead_type",
-            "location", 
-            "preferred_floor", 
-            "status",
-            "upload_type",
-            "preferred_configuration",
-            "property_status"
-          ].includes(key)
-        ) {
-          queryObj[`lead_details.${key}`] = filters[key];
+        const formattedValue = formatFilterValue(filters[key]);
+
+        if (nestedFields.includes(key)) {
+          queryObj[`lead_details.${key}`] = formattedValue;
         } else {
-          queryObj[key] = filters[key];
+          queryObj[key] = formattedValue;
         }
       }
     }
 
     /* -------------------------------------------------------------------------- */
-    /* ✅ Query MongoDB */
+    /* ✅ Query Execution */
     /* -------------------------------------------------------------------------- */
-    const assigns = await Assign.find(queryObj);
+    // Log the query to your terminal to verify the format
+    console.log("Database Query:", JSON.stringify(queryObj, null, 2));
+
+    const assigns = await Assign.find(queryObj).sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -267,8 +285,6 @@ exports.getAllAssignments = async (req, res) => {
     });
   }
 };
-
-
 
 /**
  * 📌 Get assignments for specific assignee_id
