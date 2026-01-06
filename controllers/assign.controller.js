@@ -248,7 +248,7 @@ exports.getAllAssignments = async (req, res) => {
       "phone", "email", "name", "source", "projectSource",
       "lead_status", "subdisposition", "lead_type", "location", 
       "preferred_floor", "status", "upload_type", 
-      "preferred_configuration", "property_status"
+      "preferred_configuration", "property_status", "upload_type", "schedule_date"
     ];
 
     for (const key in filters) {
