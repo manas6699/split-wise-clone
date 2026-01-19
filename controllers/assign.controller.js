@@ -182,6 +182,7 @@ exports.getAllAssignments = async (req, res) => {
       status,
       assignee_name,
       assignee_id,
+      subdisposition,
       ...filters
     } = req.query;
 
