@@ -7,8 +7,8 @@ async function migrate() {
     
     const sqlConnection = await mysql.createConnection({
         host: 'localhost',
-        user: 'root',
-        password: '',
+        user: 'admin',
+        password: 'manas',
         database: 'crm'
     }).promise();
 
