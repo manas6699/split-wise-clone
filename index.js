@@ -37,6 +37,7 @@ const io = socketIo(server, {
     // 👇 FIXED: No trailing slash, no '/login' path
     'https://real-estate-git-main-manas6699s-projects.vercel.app',
     'https://real-estate-4b8t7xrr6-manas6699s-projects.vercel.app',
+    'https://real-estate-ootrb27dc-manas6699s-projects.vercel.app',
         ],
         methods: ['GET', 'POST' , 'PATCH'],
     },
@@ -87,6 +88,7 @@ const allowedOrigins = [
     // 👇 FIXED: No trailing slash, no '/login' path
     'https://real-estate-git-main-manas6699s-projects.vercel.app',
     'https://real-estate-4b8t7xrr6-manas6699s-projects.vercel.app',
+    'https://real-estate-ootrb27dc-manas6699s-projects.vercel.app',
 ];
 
 // ✅ Configure CORS
